@@ -9,7 +9,7 @@ results/
 build/
 dist/
 
-# Skill checkpoint state (scratch, per-run)
+# Track checkpoint state (scratch, per-run)
 .threat-model-state/
 .triage-state/
 .patch-state/
@@ -27,9 +27,9 @@ INCIDENT_REPORT.md
 RESPONSE.md
 RESPONSE-*.md
 
-# ...but DO track the checked-in example outputs (captured skill runs that
+# ...but DO track the checked-in example outputs (captured track runs that
 # ship with the repo). Negation must follow the patterns above.
-!targets/*/example_skill_runs/**
+!targets/*/example_track_runs/**
 
 # dnrcanary (dnr target) generated artifacts
 targets/dnrcanary/logs/

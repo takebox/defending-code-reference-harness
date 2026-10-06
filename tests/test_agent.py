@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """run_agent error handling: error_max_turns is terminal, other CLI error
 subtypes route through the resume path, and a dead container (OOM kill,

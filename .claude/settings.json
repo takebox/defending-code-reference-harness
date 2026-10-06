@@ -1,5 +1,0 @@
-{
-  "env": {
-    "ANTHROPIC_CUSTOM_HEADERS": "anthropic-cyber-runbook: skills"
-  }
-}

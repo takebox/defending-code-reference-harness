@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """ASAN output parsing: crash_type + operation extraction, raw excerpt construction."""
 import json

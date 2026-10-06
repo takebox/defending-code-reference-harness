@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Patch grader: T0-T3 ladder, executed in a fresh container.
 
@@ -76,7 +76,7 @@ async def grade_patch(
     patched_tag: str | None = None
     try:
         # T0–T2 only run target code (apply diff, rebuild, replay PoC, test
-        # suite) via docker_ops.exec_sh — never `claude -p`. So:
+        # suite) via docker_ops.exec_sh — never `haijun -p`. So:
         #   auth=None     — don't put the API credential in the env of a
         #                   container running a binary the PoC was crafted to
         #                   crash.
@@ -102,8 +102,7 @@ async def grade_patch(
             apply_log = ""
             for i, d in enumerate(diffs):
                 await asyncio.to_thread(
-                    docker_ops.write_file, container, "/tmp/fix.diff", d
-                )
+                    docker_ops.write_file, container, "/tmp/fix.diff", d )
                 if len(diffs) > 1:
                     rc, _, err = await asyncio.to_thread(
                         docker_ops.exec_sh,
@@ -146,13 +145,11 @@ async def grade_patch(
             # ── T1: PoC stops ────────────────────────────────────────────────────
             s = time.time()
             await asyncio.to_thread(
-                docker_ops.write_file, container, "/tmp/poc.bin", crash.poc_bytes
-            )
+                docker_ops.write_file, container, "/tmp/poc.bin", crash.poc_bytes )
             adapted = crash.reproduction_command.replace(crash.poc_path, "/tmp/poc.bin")
             try:
                 rc, out, err = await asyncio.to_thread(
-                    docker_ops.exec_sh, container, adapted, timeout=600
-                )
+                    docker_ops.exec_sh, container, adapted, timeout=600 )
             except subprocess.TimeoutExpired:
                 rc, out, err = (
                     -1,
@@ -194,8 +191,7 @@ async def grade_patch(
                 await asyncio.to_thread(docker_ops.commit, container, patched_tag)
                 patched_target = replace(target, image_tag=patched_tag)
                 focus = reattack_focus or _focus_hint(
-                    crash, target.source_root if reattack_with_diff else None
-                )
+                    crash, target.source_root if reattack_with_diff else None )
                 re_crash, _, _ = await run_find(
                     patched_target,
                     model=model,
@@ -206,8 +202,7 @@ async def grade_patch(
                     accept_dos=False,
                     transcript_path=transcript_path,
                     progress_prefix=(
-                        f"{progress_prefix}:reattack" if progress_prefix else None
-                    ),
+                        f"{progress_prefix}:reattack" if progress_prefix else None ),
                     agent_env=agent_env,
                     system_prompt=system_prompt,
                     max_resume_attempts=1,

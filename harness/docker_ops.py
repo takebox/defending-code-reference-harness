@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Thin docker CLI wrapper. Shelling out keeps it dependency-free.
 
@@ -126,8 +126,7 @@ def image_exists(tag: str) -> bool:
 
 
 def exec_sh(
-    container: str, command: str, timeout: int | None = None
-) -> tuple[int, str, str]:
+    container: str, command: str, timeout: int | None = None ) -> tuple[int, str, str]:
     """Run a shell command inside a container and return (rc, stdout, stderr).
 
     Unlike read_file/write_file this passes the command through sh -c so shell

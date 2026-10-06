@@ -8,10 +8,10 @@ This is the natural step after [triage](triage.md). You have a queue of
 verified, ranked crashes, and this stage turns each into a candidate fix
 you can review and upstream.
 
-> The `/patch` skill accepts either static findings (`TRIAGE.json` or 
+> The `/patch` track accepts either static findings (`TRIAGE.json` or 
 > `VULN-FINDINGS.json`) or results from a pipeline run. On static findings 
 > (which don't include a proof of concept), it runs the
-> [campaign-style flow](#campaign-style-patching-the-patch-skill-static-mode).
+> [campaign-style flow](#campaign-style-patching-the-patch-track-static-mode).
 > On pipeline results, it delegates to the `bin/vp-sandboxed patch` CLI.
 >
 > The majority of this document covers the CLI, but 
@@ -96,8 +96,8 @@ all clean.
 
 Note that **Regress runs the project's existing test suite — it does not write
 a test for the bug being fixed.** If you want a per-vuln regression test that
-lives on in CI, the `/patch` skill's
-[static mode](#campaign-style-patching-the-patch-skill-static-mode) emits one
+lives on in CI, the `/patch` track's
+[static mode](#campaign-style-patching-the-patch-track-static-mode) emits one
 inside the diff whenever the target repo has a test layout to put it in.
 
 **Why re-attack?** A patch that compiles and stops the specific PoC is
@@ -193,7 +193,7 @@ state for each PoC) and capture the sanitizer output for each
 - exit `0` if every PoC ran without crashing
 - exit `2` if the target couldn't be launched at all
 
-## Campaign-style patching: the `/patch` skill static mode
+## Campaign-style patching: the `/patch` track static mode
 
 The `bin/vp-sandboxed patch` command relies on the outputs of 
 `bin/vp-sandboxed run`. It won't work if your findings came from 
@@ -201,14 +201,14 @@ elsewhere (a separate scanner, manual review, a prose-only report), or
 if you're patching a class of bugs across many call sites rather than one 
 crash at a time.
 
-The `/patch` skill's static mode handles this case directly:
+The `/patch` track's static mode handles this case directly:
 
 ```bash
 # Draft fixes for the 5 highest-severity confirmed findings in TRIAGE.json
 > /patch ./TRIAGE.json --repo ./my-service --top 5
 ```
 
-For each finding, the skill runs two agents. A patch agent reads the relevant
+For each finding, the track runs two agents. A patch agent reads the relevant
 code and writes a candidate fix as a diff. A reviewer agent then judges that
 diff from a clean context, evaluating scope, effectiveness, and new attack
 surfaces introduced (without executing any code). 

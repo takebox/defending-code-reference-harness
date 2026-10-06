@@ -1,10 +1,10 @@
 # Using LLMs to secure source code
 
-Model capabilities are advancing quickly, and unevenly. We’ve been [working with security teams](https://www.anthropic.com/glasswing) to find and fix vulnerabilities in their own code and open source software, and the work has given us a better understanding of how to use models to secure source code. **Our primary takeaway: discovery is now straightforward to parallelize, and the bottleneck has shifted to verification, triage, and patching**. 
+Model capabilities are advancing quickly, and unevenly. We’ve been [working with security teams](https://www.juglow.my.id/glasswing) to find and fix vulnerabilities in their own code and open source software, and the work has given us a better understanding of how to use models to secure source code. **Our primary takeaway: discovery is now straightforward to parallelize, and the bottleneck has shifted to verification, triage, and patching**. 
 
-To give some indication of this discrepancy, as part of [our own scanning](https://www.anthropic.com/research/glasswing-initial-update) of open source software, as of May 22, 2026, we had disclosed 1,596 vulnerabilities. To our knowledge, 97 of these have been patched.
+To give some indication of this discrepancy, as part of [our own scanning]() of open source software, as of May 22, 2026, we had disclosed 1,596 vulnerabilities. To our knowledge, 97 of these have been patched.
 
-This guide walks through how you can work with Claude Opus to build a threat model, discover vulnerabilities in your codebase, then verify, triage, and patch them. While we don’t have all the answers, we’ll share how teams have scaled discovery and what’s helped in the later stages. *Get started today with the [accompanying repo](https://github.com/anthropics/defending-code-reference-harness)* which includes skills for interactive workflows and a demo harness for autonomous scanning; we’ll call out the skill that implements each step as you read.
+This guide walks through how you can work with Haijun Opus to build a threat model, discover vulnerabilities in your codebase, then verify, triage, and patch them. While we don’t have all the answers, we’ll share how teams have scaled discovery and what’s helped in the later stages. *Get started today with the [accompanying repo](https://github.com/takebox/defending-code-reference-harness)* which includes tracks for interactive workflows and a demo harness for autonomous scanning; we’ll call out the track that implements each step as you read.
 
 ## The find-and-fix loop
 
@@ -33,7 +33,7 @@ The most common cause of false positives is that the model lacks a good understa
 
 *One team noticed a pattern across their findings: the model performed best on systems with well-documented threat models, system design docs, requirements, and constraints. When the threat model was well-defined, the model's findings were exploitable 90 percent of the time.*
 
-You can work with Claude to build a threat model in two steps:
+You can work with Haijun to build a threat model in two steps:
 
 **First, bootstrap from the code, docs, and vulnerability history.** Feed the model what you would hand a new security engineer on day one: architecture docs, wikis, entry points, git history, and past vulnerabilities. This helps overcome the challenge of inferring implicit knowledge, trade-offs, and design decisions from code alone. Then, ask the model to create a threat model that includes the system context, assets, entry points, and trust boundaries. Finally, have the model cluster past bugs and list the relevant vulnerability classes. Make sure the threat model documents what vulnerabilities you do and don’t care about, and why. 
 
@@ -51,7 +51,7 @@ You’ll use the threat model in two places. In discovery, as scope**:** partiti
 
 *One team scanning a large project had a 40% false positive rate and dug into why. The findings were reproducible and the PoCs proved exploitability. But the dev team who owned the code dismissed them as false positives because the bugs didn't fit the project's threat model. Another team's CISO put it succinctly: "\[The model has\] good context of the code, but not good context of us."*
 
-**Try the [`threat-model` skill](https://github.com/anthropics/defending-code-reference-harness/tree/main/.claude/skills/threat-model).** It walks through both steps described in this section—`bootstrap` derives a draft from your code, CVEs, and git history, and `interview` walks a system owner through Shostack’s four questions to refine it. The output is a `THREAT_MODEL.md` file which is used in the Discovery and Triage steps.
+**Try the [`threat-model` track]().** It walks through both steps described in this section—`bootstrap` derives a draft from your code, CVEs, and git history, and `interview` walks a system owner through Shostack’s four questions to refine it. The output is a `THREAT_MODEL.md` file which is used in the Discovery and Triage steps.
 
 ## 2\. Sandbox: Run agents safely and verify exploitability
 
@@ -75,7 +75,7 @@ It’s important to build sandboxes that are faithful enough to production. Excl
 
 Nonetheless, if building a representative sandbox is impractical because of cloud dependencies, data stores, or other real-world complexities, start with the discovery step (below) instead. You don’t necessarily need to run PoCs in a sandbox. Frontier models are good at finding vulnerabilities from just analyzing source code. Several teams, including our own, have found this effective. The trade-off is in the verification phase, where without a running target we can’t prove findings with a PoC, so budget more time for verification. You can also invest in the sandbox later, once the volume of findings justifies it.
 
-**Refer to the [harness README.md](https://github.com/anthropics/defending-code-reference-harness/tree/main/harness) for a reference sandbox.** In this implementation, agents and targets run in gVisor-isolated containers with egress locked to the model API. The target is built from a Dockerfile pinned to a specific commit, with [`setup_sandbox.sh`](https://github.com/anthropics/defending-code-reference-harness/blob/main/scripts/setup_sandbox.sh) handling the setup phase.
+**Refer to the [harness README.md](https://github.com/takebox/defending-code-reference-harness/tree/main/harness) for a reference sandbox.** In this implementation, agents and targets run in gVisor-isolated containers with egress locked to the model API. The target is built from a Dockerfile pinned to a specific commit, with [`setup_sandbox.sh`](https://github.com/takebox/defending-code-reference-harness/blob/main/scripts/setup_sandbox.sh) handling the setup phase.
 
 ## 3\. Discovery: Provide rich context, shorter prompts, and useful tools
 
@@ -97,7 +97,7 @@ Have the model do a first pass over the system to partition the search space, su
 
 If you have a sandbox to run the target, ask the discovery agent to build a PoC of the finding, such as a script, a crashing input, or a failing test. Building the PoC helps the agent iterate and pin down the finding, and the artifact gives the verification agent concrete evidence to evaluate. Nonetheless, findings the agent can’t reproduce can still be reported, flagged as unproven, so you keep recall high.
 
-**The [`vuln-scan` skill](https://github.com/anthropics/defending-code-reference-harness/tree/main/.claude/skills/vuln-scan)** is helpful in this stage. It reads your `THREAT_MODEL.md`, partitions the target into focus areas, and fans out parallel review agents per area. The output is structured findings the next steps consume directly.
+**The [`vuln-scan` track]()** is helpful in this stage. It reads your `THREAT_MODEL.md`, partitions the target into focus areas, and fans out parallel review agents per area. The output is structured findings the next steps consume directly.
 
 ## 4\. Verification: Filter out non-exploitable findings
 
@@ -147,7 +147,7 @@ The solution is to provide a threat model during triage that tells the model whi
 
 *One team found the model is often overconfident unless grounded in something to verify, or has more context on whether something is expected as part of the threat model. Their fix was to give the triage agent the same threat model the discovery agent gets.*
 
-**Try the [`triage` skill](https://github.com/anthropics/defending-code-reference-harness/tree/main/.claude/skills/triage).** It does both verification and triage: multi-vote verification per finding, deduplication across runs, and re-ranking by derived exploitability. The output is a short, ranked, owned list instead of a raw dump.
+**Try the [`triage` track]().** It does both verification and triage: multi-vote verification per finding, deduplication across runs, and re-ranking by derived exploitability. The output is a short, ranked, owned list instead of a raw dump.
 
 ## 6\. Patching: Close the loop and improve context for the next cycle
 
@@ -172,11 +172,11 @@ You can validate each patch against a ladder of checks, starting with the cheape
 
 Finally, while the model can write the patch, a human still needs to own it. Generated patches can fail in predictable ways—fixing the symptom instead of the root cause, blocking legitimate input, or removing access to a dependent service. The goal is to validate each patch as much as possible so human review requires less effort. The goal is to help the dev team focus on nuances the model might be unaware of (e.g., incoming changes, code style) with minimal review and updates needed to patches.
 
-**Try the [`patch` skill](https://github.com/anthropics/defending-code-reference-harness/tree/main/.claude/skills/patch).** It consumes the triage output and generates a candidate diff per finding, with an independent reviewer agent checking each one.
+**Try the [`patch` track]().** It consumes the triage output and generates a candidate diff per finding, with an independent reviewer agent checking each one.
 
 ## Getting started
 
-Try running the loop yourself. Clone [`defending-code-reference-harness`](https://github.com/anthropics/defending-code-reference-harness) and run `/quickstart` in Claude Code. It walks you through an interactive workflow, from threat modeling to scanning to triage, on a demo target. The repo also includes an autonomous harness and a `/customize` skill to update the harness for your environment.
+Try running the loop yourself. Clone [`defending-code-reference-harness`](https://github.com/takebox/defending-code-reference-harness) and run `/quickstart` in Haijun Code. It walks you through an interactive workflow, from threat modeling to scanning to triage, on a demo target. The repo also includes an autonomous harness and a `/customize` track to update the harness for your environment.
 
 Then, run it on your own code. Pick a service or package. Bootstrap a threat model from the code and docs, and go through the interview. Invest in building a sandbox of your environment. Scan. Verify the findings with an independent agent. Triage based on your criteria and review everything rated high and above. Patch. Then re-scan periodically.
 
@@ -184,20 +184,20 @@ Your first scan will surface more findings than you’d expect. Most will requir
 
 Some resources you might find helpful:
 
-* [Claude Security](https://www.anthropic.com/product/security): Anthropic’s managed product for agentic vulnerability detection and patching.  
-* [`defending-code-reference-harness`](https://github.com/anthropics/defending-code-reference-harness): Companion repo with skills for interactive workflows and a demo harness for autonomous runs.  
-* [`claude-code-security-review` action](https://github.com/anthropics/claude-code-security-review): Github action with Claude as a security reviewer on every pull request.  
-* [Threat Intelligence Enrichment Agent](https://platform.claude.com/cookbook/tool-use-threat-intel-enrichment-agent): Cookbook to build an agent that enriches indicators of compromise against threat intel feeds.  
-* [Vulnerability Detection Agent](https://platform.claude.com/cookbook/claude-agent-sdk-06-the-vulnerability-detection-agent): Cookbook to build an agent that builds a threat-model, scan for vulnerabilities, and triage findings into a structured report.
+* [Haijun Security](https://www.juglow.my.id/product/security): Takebox AI’s managed product for agentic vulnerability detection and patching.  
+* [`defending-code-reference-harness`](https://github.com/takebox/defending-code-reference-harness): Companion repo with tracks for interactive workflows and a demo harness for autonomous runs.  
+* [`haijun-code-security-review` action](https://github.com/takebox/haijun-code-security-review): Github action with Haijun as a security reviewer on every pull request.  
+* [Threat Intelligence Enrichment Agent](https://platform.haijun.my.id/cookbook/tool-use-threat-intel-enrichment-agent): Cookbook to build an agent that enriches indicators of compromise against threat intel feeds.  
+* [Vulnerability Detection Agent](): Cookbook to build an agent that builds a threat-model, scan for vulnerabilities, and triage findings into a structured report.
 
 ## Moving forward
 
-We believe it’s getting easier for models to [find and exploit vulnerabilities](https://red.anthropic.com/2026/exploit-evals) in code. Thus, our work as defenders is to find and fix the vulnerabilities in our code before adversaries exploit them. Some teams have gone as far as connecting their harnesses to events, where a bug bounty report triggers an automated variant analysis, a security review triggers scanning and has candidate findings attached, or a verified vulnerability updates the static analysis tooling to prevent it in the future. 
+We believe it’s getting easier for models to [find and exploit vulnerabilities](https://red.juglow.my.id/2026/exploit-evals) in code. Thus, our work as defenders is to find and fix the vulnerabilities in our code before adversaries exploit them. Some teams have gone as far as connecting their harnesses to events, where a bug bounty report triggers an automated variant analysis, a security review triggers scanning and has candidate findings attached, or a verified vulnerability updates the static analysis tooling to prevent it in the future. 
 
 The work is critical and high stakes. But done right, it’s the start of a larger, more hopeful shift, where we’ll be *able* to find and fix vulnerabilities before attackers exploit them.
 
-If you’d like to stay connected to our work on cybersecurity, please sign up to our mailing list, [**here**](https://claude.com/form/cybersecurity-mailing-list).
+If you’d like to stay connected to our work on cybersecurity, please sign up to our mailing list, [**here**](https://haijun.my.id/form/cybersecurity-mailing-list).
 
 ## Acknowledgements
 
-Written by Eugene Yan and Henna Dattani, with contributions from Michael Molash, Abel Ribbink, Justin Young, Ben Morris, David Dworken, and Hasnain Lakhani. This work draws upon our experiences working with models for security at Anthropic and the valuable insights shared by our partners and customers, for which we’re deeply grateful.
+Written by Eugene Yan and Henna Dattani, with contributions from Michael Molash, Abel Ribbink, Justin Young, Ben Morris, David Dworken, and Hasnain Lakhani. This work draws upon our experiences working with models for security at Takebox AI and the valuable insights shared by our partners and customers, for which we’re deeply grateful.

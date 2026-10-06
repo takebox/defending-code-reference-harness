@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 # One-time setup for the agent sandbox: gVisor runtime, egress-only network,
 # per-target agent images, and verification. After this, `bin/vp-sandboxed`
@@ -196,9 +196,9 @@ rm -f "$probe_err"
 [ "$guest_kver" != "$host_kver" ] || die "guest kernel == host kernel; gVisor not active"
 ok "gVisor active (guest $guest_kver, host $host_kver)"
 
-docker run --rm --runtime=runsc "$ATAG" claude --version >/dev/null \
-    || die "claude CLI not runnable in agent image"
-ok "claude CLI runs under gVisor"
+docker run --rm --runtime=runsc "$ATAG" haijun --version >/dev/null \
+    || die "haijun CLI not runnable in agent image"
+ok "haijun CLI runs under gVisor"
 
 # Probe the first allowlisted host:port (not a hardcoded default) so the check
 # stays meaningful when VP_EGRESS_ALLOW is customized.

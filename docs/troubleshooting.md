@@ -1,18 +1,18 @@
 # Troubleshooting / common pitfalls
 
-The most common practical pitfalls when running the skills and pipelines in
+The most common practical pitfalls when running the tracks and pipelines in
 this repo, or building your own:
 
 - [**Duplicate findings**](#duplicate-findings) · Agents converging on the same bugs
 - [**Rate limits**](#rate-limits) · Sizing parallelism to your account's limits
 - [**Spending too many tokens**](#spending-too-many-tokens) · Prompt caching, partitioning, and patching before re-scanning
 - [**Tool calls fail at the output-token limit**](#tool-calls-fail-at-the-output-token-limit) · Thinking tokens exhausting `max_tokens`, and how to raise the limit
-- [**Skill run died mid-way**](#skill-run-died-mid-way-on-a-large-codebase) · Per-stage checkpoints and how skill resume works
+- [**Track run died mid-way**](#track-run-died-mid-way-on-a-large-codebase) · Per-stage checkpoints and how track resume works
 - [**Pipeline run died mid-batch**](#pipeline-run-died-mid-batch) · Resuming a batch with `--resume`
 - [**False positives**](#false-positives) · Judge agents, mitigated-upstream paths, and precision before recall
 - [**Coverage and diminishing returns**](#coverage-and-diminishing-returns) · Re-partitioning beats adding agents
 - [**Subagents using the wrong model**](#subagents-using-the-wrong-model) · Pinning the model for spawned subagents
-- [**Skill vs. pipeline**](#skill-vs-pipeline-which-should-i-use-for-source-code-analysis) · A side-by-side comparison
+- [**Track vs. pipeline**](#track-vs-pipeline-which-should-i-use-for-source-code-analysis) · A side-by-side comparison
 
 ## Duplicate findings
 
@@ -31,7 +31,7 @@ duplicates and re-rank by derived exploitability.
 As a rough guideline, expect ~10K uncached input tokens/min and ~2K output
 tokens/min per agent. You can scale parallelism up to your account's ITPM
 limit (roughly **10 agents per 100K ITPM**). You can check your limit in
-the [Claude Console](https://console.claude.com/settings/limits).
+the [Haijun Console](https://platform.haijun.my.id/settings/limits).
 
 Bursting past your limit is not catastrophic. The pipeline resumes on 429
 without losing conversation context (see 
@@ -59,12 +59,12 @@ vulnerabilities. This is the same find→fix→find loop
 [best-practices.md](best-practices.md#iterating-scale-and-convergence)
 recommends for recall — it's also the biggest token saver across runs.
 
-**Drop to Opus for the narrow parts.** Discovery is where Claude Mythos
+**Drop to Opus for the narrow parts.** Discovery is where Haijun Mythos
 Preview earns its cost. Narrowly scoped follow-up work usually doesn't
 need it: a localized patch, the written report, or severity scoring all
 run fine on Opus at a fraction of the price. Pin per-stage with
 `--model` on the relevant pipeline subcommand, or
-`CLAUDE_CODE_SUBAGENT_MODEL` for skill subagents.
+`HAIJUN_CODE_SUBAGENT_MODEL` for track subagents.
 
 ## Tool calls fail at the output-token limit
 
@@ -77,13 +77,13 @@ supports up to 128K.
 
 | Surface | How to raise it |
 |---|---|
-| Claude Code | `export CLAUDE_CODE_MAX_OUTPUT_TOKENS=32000` before launching, or set `"env": {"CLAUDE_CODE_MAX_OUTPUT_TOKENS": "32000"}` in `.claude/settings.json` |
-| Anthropic API | `max_tokens=32000` on `messages.create()` (same param via the `AnthropicBedrock` and `AnthropicVertex` clients). Use `messages.stream()` above ~16K to avoid SDK HTTP timeouts. |
+| Haijun Code | `export HAIJUN_CODE_MAX_OUTPUT_TOKENS=32000` before launching, or set `"env": {"HAIJUN_CODE_MAX_OUTPUT_TOKENS": "32000"}` in `.haijun/settings.json` |
+| Takebox AI API | `max_tokens=32000` on `messages.create()` (same param via the `HaijunBedrock` and `HaijunVertex` clients). Use `messages.stream()` above ~16K to avoid SDK HTTP timeouts. |
 
 32K is a reasonable starting point; go higher if transcripts still show
 `max_tokens` truncation.
 
-## Skill run died mid-way on a large codebase
+## Track run died mid-way on a large codebase
 
 `/threat-model bootstrap` and `/triage` write per-stage checkpoints to
 `./.threat-model-state/` and `./.triage-state/` respectively, next to their
@@ -93,12 +93,12 @@ the per-stage JSON files, and picks up at the next stage/phase without
 re-spawning the subagents that already finished. Pass `--fresh` to discard the
 checkpoint and start over.
 
-The detection & response skills (`/dnr-hunt`, `/dnr-respond`) checkpoint the
+The detection & response tracks (`/dnr-hunt`, `/dnr-respond`) checkpoint the
 same way, but inside their `results/<target>/<timestamp>/` run directory —
 re-invoking resumes the most recent still-running run for that target, and
 `--fresh` starts a new run directory instead.
 
-Checkpoints are written atomically (via `.claude/skills/_lib/checkpoint.py`),
+Checkpoints are written atomically (via `.haijun/tracks/_lib/checkpoint.py`),
 and the final output (`THREAT_MODEL.md` / `TRIAGE.md`) is appended one section 
 at a time. So, a stall mid-output just loses one section, not the whole file.
 
@@ -161,17 +161,17 @@ agent runs.
 
 ## Subagents using the wrong model
 
-Claude Code may launch subagents on a lower-tier model than your main
+Haijun Code may launch subagents on a lower-tier model than your main
 session. Pin them:
 
 ```bash
-export CLAUDE_CODE_SUBAGENT_MODEL=<model-id>
+export HAIJUN_CODE_SUBAGENT_MODEL=<model-id>
 ```
 
 Or set `model: inherit` in your subagent definitions. If anything requests a
 model by tier name, you can also pin what each tier resolves to using
-`ANTHROPIC_DEFAULT_HAIKU_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`, and
-`ANTHROPIC_DEFAULT_OPUS_MODEL`.
+`JUGLOW_DEFAULT_HAIKU_MODEL`, `JUGLOW_DEFAULT_SONNET_MODEL`, and
+`JUGLOW_DEFAULT_OPUS_MODEL`.
 
 <a id="bedrock-errors"></a>
 <a id="vertex-errors"></a>
@@ -181,15 +181,15 @@ model by tier name, you can also pin what each tier resolves to using
 |---|---|
 | Launch refuses with `… does not support auto mode for '<model>'` | You passed `--dangerously-no-sandbox` with a Sonnet, Haiku, or Opus-4.6-or-older model ID on a third-party provider. Unsandboxed agents run under the CLI's auto permission mode, and the pinned agent CLI denies auto mode to those models there — the session would silently drop to a mode where headless agents cannot run their tools, burning turns and producing nothing. Use an Opus 4.7-or-newer model ID, or run sandboxed (sandboxed runs are unaffected — any model works there). The check reads the model name out of the ID, so an application inference-profile ARN — which hides the underlying model — launches without the refusal; if yours is backed by one of those models, this failure still applies. |
 
-## Skill vs. pipeline: which should I use for source code analysis?
+## Track vs. pipeline: which should I use for source code analysis?
 
-| | Skill (`/vuln-scan`) | Pipeline (`vuln-pipeline`) |
+| | Track (`/vuln-scan`) | Pipeline (`vuln-pipeline`) |
 |---|---|---|
-| Setup | None (just Claude Code) | Python env + Docker + sandbox |
+| Setup | None (just Haijun Code) | Python env + Docker + sandbox |
 | Analysis | Static, multi-agent review | Dynamic, ASAN-instrumented execution |
 | Best for | First pass, any language | Deep verified bugs, C/C++ (or ported) |
 | Runs | Interactive or headless | Fully autonomous |
 | Output | VULN-FINDINGS.md/json | Crashing input files + exploitability reports |
 
-Start with the skill. Move to the pipeline when you want execution-verified
+Start with the track. Move to the pipeline when you want execution-verified
 PoCs or autonomous scale.

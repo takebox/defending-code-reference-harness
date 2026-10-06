@@ -1,12 +1,12 @@
 # Triage: "How do I go through these hundreds of findings?"
 
 Your pipeline (or another scanner) just produced a pile of raw findings.
-The `/triage` skill turns that pile into a short, ranked, owned list that
+The `/triage` track turns that pile into a short, ranked, owned list that
 engineering can act on.
 
 ## What it does
 
-The skill does four things in a single pass:
+The track does four things in a single pass:
 
 1. **Verify.** Adversarially checks each finding against the source code
    (read-only, does not execute code), and drops the ones that aren't real.
@@ -25,7 +25,7 @@ other downstream use).
 ## The rules it applies
 
 - **Duplicates.** Two findings are duplicates if fixing one fixes the other.
-  The skill attempts to identify those cases using two passes. First, a
+  The track attempts to identify those cases using two passes. First, a
   cheap deterministic pass that checks if two findings are in the same file,
   have the same category, and reference line numbers within ten lines. Second,
   an LLM pass that asks the model to use semantic reasoning to identify
@@ -34,7 +34,7 @@ other downstream use).
   the finding. The verifier lists preconditions first, then maps the count to
   a score - none, with unauthenticated remote access = High; one or two, or an
   authenticated path = Medium; three or more, or local-only = Low. You can swap
-  in your own scoring standard when the skill asks at the start of a run.
+  in your own scoring standard when the track asks at the start of a run.
 
 To see the full reasoning behind both, read the [blog post's triage section](blog-post.md#5-triage-deduplicate-by-root-cause-rank-by-preconditions-and-impact).
 
@@ -51,10 +51,10 @@ To see the full reasoning behind both, read the [blog post's triage section](blo
 > /triage ./findings/ --auto --votes 5 --repo ./path/to/source
 
 # With org-specific false-positive rules (see customizing.md)
-> /triage ./VULN-FINDINGS.json --repo ./src --fp-rules .claude/fp-rules.txt
+> /triage ./VULN-FINDINGS.json --repo ./src --fp-rules .haijun/fp-rules.txt
 ```
 
-By default, the skill **interviews you first** about your trust boundary, 
+By default, the track **interviews you first** about your trust boundary, 
 your threat model, your scoring standard (HIGH/MED/LOW vs. CVSS vs. your org bug-bar), 
 and whether to bias toward precision or recall on split votes. These answers shape
 verification and ranking. Pass `--auto` to skip the interview and use
@@ -86,4 +86,4 @@ default (see [best-practices.md#patching](best-practices.md#patching)).
 For pipeline-produced crashes (which include a PoC and ASAN trace), `bin/vp-sandboxed patch`
 generates and verifies a fix per crash. See [patching.md](patching.md).
 For findings without a runnable PoC, see
-[patching.md's static mode](patching.md#campaign-style-patching-the-patch-skill-static-mode).
+[patching.md's static mode](patching.md#campaign-style-patching-the-patch-track-static-mode).

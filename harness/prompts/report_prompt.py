@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Report-agent prompt: structured exploitability analysis of a verified crash.
 
@@ -193,8 +193,7 @@ def build_report_prompt(
 ) -> str:
     surface = (
         ATTACK_SURFACE_CONFIGURED.format(attack_surface=attack_surface)
-        if attack_surface else ATTACK_SURFACE_GENERIC
-    )
+        if attack_surface else ATTACK_SURFACE_GENERIC )
     if upstream_log is not None:
         novelty = NOVELTY_WITH_LOG.format(
             commit=commit[:12], crash_file=crash_file or "?", upstream_log=upstream_log,

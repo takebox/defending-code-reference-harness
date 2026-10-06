@@ -10,22 +10,22 @@ specific to C/C++ and ASAN.
 
 ## Start here
 
-Inside Claude Code, from the repo root:
+Inside Haijun Code, from the repo root:
 
 ```
 > /customize
 ```
 
-The skill reads the pipeline source, interviews you about your 
+The track reads the pipeline source, interviews you about your 
 target (the language, how a finding is detected, the build system, which vuln
 classes you care about), and proposes a concrete migration plan. If you can't
-use Claude Code, paste the contents of `.claude/skills/customize/SKILL.md`
+use Haijun Code, paste the contents of `.haijun/tracks/customize/TRACK.md`
 into another AI coding tool.
 
 Early customers have done this successfully. One team ported the pipeline to
 scan Java classes and found real bugs without even rewriting the prompt for
-the JVM. The fastest path is usually to open the repo in Claude Code,
-describe your target environment, and let Claude adapt the prompts and
+the JVM. The fastest path is usually to open the repo in Haijun Code,
+describe your target environment, and let Haijun adapt the prompts and
 scaffolding.
 
 ## What a port usually involves
@@ -40,9 +40,9 @@ frontier model is good at producing fully-working builds.
 
 Once the target software is runnable in a container, spin up a few
 vulnerability-finding agents in parallel to accelerate time-to-results. While
-interactive investigation in Claude Code helps, results scale massively with
+interactive investigation in Haijun Code helps, results scale massively with
 effective autonomous agents. A great way to iterate on these agents is to use
-Claude Code to review the transcripts from past runs and suggest improvements
+Haijun Code to review the transcripts from past runs and suggest improvements
 to the pipeline and prompts — this scales better, so it tends to have a
 higher return on time invested than finding vulns interactively.
 
@@ -74,14 +74,14 @@ The orchestration (`harness/cli.py`, `harness/find.py`, `harness/grade.py`,
 `harness/report.py`) is mostly generic plumbing and usually survives a port
 with minimal changes.
 
-## Tune the interactive skills
+## Tune the interactive tracks
 
 If you don't need a full port and just want `/vuln-scan` and `/triage` to
 understand your stack, both take a plain-text instructions file:
 
 ```
-> /vuln-scan ./src --extra .claude/scan-extras.txt
-> /triage ./VULN-FINDINGS.json --fp-rules .claude/fp-rules.txt
+> /vuln-scan ./src --extra .haijun/scan-extras.txt
+> /triage ./VULN-FINDINGS.json --fp-rules .haijun/fp-rules.txt
 ```
 
 `--extra` appends org-specific vulnerability categories to the scan brief
@@ -90,5 +90,5 @@ understand your stack, both take a plain-text instructions file:
 `--fp-rules` appends org-specific exclusions to the triage verifier (e.g., "we use Prisma
 everywhere, raw-query SQLi only", "k8s resource limits cover DoS").
 
-If you use these files to tune the skills, we recommend you keep them in version
+If you use these files to tune the tracks, we recommend you keep them in version
 control alongside your code.

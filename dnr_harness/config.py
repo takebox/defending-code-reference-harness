@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Detection & response target configuration loader.
 
@@ -25,7 +25,7 @@ class DnrTargetConfig:
 
     name: str
     target_dir: str
-    # seed/app commands are the target's contract: the /dnr-* skills run
+    # seed/app commands are the target's contract: the /dnr-* tracks run
     # them from the target dir, and the pipeline renders them into the
     # hunt/grade prompts (run from /work in-container, where app/ lands
     # at /work/app) — keep their paths target-relative

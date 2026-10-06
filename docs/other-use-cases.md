@@ -36,7 +36,7 @@ The model performs well on security use cases beyond source code analysis and de
 
 ## Threat Intelligence
 
-* See our [cookbook](https://platform.claude.com/cookbook/tool-use-threat-intel-enrichment-agent)
+* See our [cookbook](https://platform.haijun.my.id/cookbook/tool-use-threat-intel-enrichment-agent)
   for an end-to-end threat intelligence agent that autonomously investigates
   IOCs: queries multiple threat-intel sources, maps findings to MITRE
   ATT&CK, and produces structured reports for SIEM/SOAR integration.

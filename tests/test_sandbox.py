@@ -1,8 +1,8 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """harness.sandbox guard — env-var-based.
 
-Unit-level only. Real-infra checks (gVisor isolation, egress, claude CLI)
+Unit-level only. Real-infra checks (gVisor isolation, egress, haijun CLI)
 live in tests/test_agent_sandbox.py and the setup script's verification.
 """
 
@@ -54,9 +54,9 @@ def test_permission_mode_tracks_runtime(monkeypatch):
 
 def test_container_env_threads_proxy(monkeypatch):
     monkeypatch.setenv(sandbox.PROXY_ENV, "http://p:3128")
-    e = sandbox.container_env({"ANTHROPIC_API_KEY": "k"})
+    e = sandbox.container_env({"JUGLOW_API_KEY": "k"})
     assert e == {
-        "ANTHROPIC_API_KEY": "k",
+        "JUGLOW_API_KEY": "k",
         "HTTPS_PROXY": "http://p:3128",
         "https_proxy": "http://p:3128",
     }
@@ -64,8 +64,8 @@ def test_container_env_threads_proxy(monkeypatch):
 
 def test_container_env_passes_auth_unchanged_without_proxy(monkeypatch):
     monkeypatch.delenv(sandbox.PROXY_ENV, raising=False)
-    e = sandbox.container_env({"CLAUDE_CODE_OAUTH_TOKEN": "tok"})
-    assert e == {"CLAUDE_CODE_OAUTH_TOKEN": "tok"}
+    e = sandbox.container_env({"HAIJUN_CODE_OAUTH_TOKEN": "tok"})
+    assert e == {"HAIJUN_CODE_OAUTH_TOKEN": "tok"}
 
 
 def _capture_run(monkeypatch):
@@ -76,8 +76,7 @@ def _capture_run(monkeypatch):
         sandbox.docker_ops,
         "run",
         lambda img, *, name, env, mounts, network, **kw: (
-            captured.update(env=env, mounts=mounts, network=network) or name
-        ),
+            captured.update(env=env, mounts=mounts, network=network) or name ),
     )
     return captured
 
@@ -87,12 +86,12 @@ def test_agent_container_passes_mounts_through(monkeypatch):
     with sandbox.agent_container(
         "img:v1",
         "c",
-        {"ANTHROPIC_API_KEY": "k"},
+        {"JUGLOW_API_KEY": "k"},
         mounts=[("/host/found_bugs.json", "/work/found_bugs.json")],
     ):
         pass
     assert ("/host/found_bugs.json", "/work/found_bugs.json") in captured["mounts"]
-    assert captured["env"]["ANTHROPIC_API_KEY"] == "k"
+    assert captured["env"]["JUGLOW_API_KEY"] == "k"
 
 
 def test_agent_container_network_default_tracks_sandbox(monkeypatch):
@@ -127,7 +126,7 @@ def test_agent_container_prebuilt_skips_ensure(monkeypatch):
 
 def test_agent_container_network_override(monkeypatch):
     """``network="none"`` pins the T0–T2 patch grader to no egress regardless
-    of sandbox mode — it never runs ``claude -p``."""
+    of sandbox mode — it never runs ``haijun -p``."""
     captured = _capture_run(monkeypatch)
     for runtime_env in ("runsc", None):
         if runtime_env:

@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Data contracts for the find→grade pipeline.
 
@@ -80,8 +80,7 @@ class PatchVerdict:
             self.t0_builds
             and self.t1_poc_stops
             and self.t2_tests_pass is not False
-            and self.re_attack_clean is not False
-        )
+            and self.re_attack_clean is not False )
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)

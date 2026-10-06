@@ -7,8 +7,8 @@
 The reference pipeline consists of both deterministic orchestration code and
 non-deterministic agents. The orchestration code (the `vuln-pipeline` process
 itself) is trusted and never runs target code or model-chosen commands. As such,
-it can run unsandboxed. The agents run as `claude -p` processes and can execute 
-arbitrary commands. For that reason, the agent claude processes run *inside* a
+it can run unsandboxed. The agents run as `haijun -p` processes and can execute 
+arbitrary commands. For that reason, the agent haijun processes run *inside* a
 gVisor container alongside the target binary and source. The orchestrator
 manages container lifecycle, transcript streaming, and PoC extraction from the
 host (via `docker exec`, since host-side `docker cp` can't reach gVisor's
@@ -20,7 +20,7 @@ tmpfs).
 | -------------------- | --------------------- | ------------------------------------------------------ |
 | Agent `Read`/`Write` | host filesystem       | container filesystem only                              |
 | Agent `Bash`         | host shell            | container shell only (gVisor netstack/kernel)          |
-| Network egress       | whatever the host has | the configured allowlist (default `api.anthropic.com:443`) |
+| Network egress       | whatever the host has | the configured allowlist (default `api.Takebox AI.com:443`) |
 | Host coupling        | full                  | `docker exec cat` PoC out, `-v found_bugs.jsonl:ro` in |
 
 gVisor provides the isolation between the agent and your machine. The agent's
@@ -57,7 +57,7 @@ Docker, so containers can run on gVisor's kernel instead of your host's.
 which has no route to the internet, and starts the allowlist proxy to
 support model API traffic.
 - Images: Builds each target's Docker image, plus a copy of each with
-the Claude Code CLI installed (for running the agent).
+the Haijun Code CLI installed (for running the agent).
 - Checks: Runs the verification commands shown below.
 
 gVisor requires a Linux host (x86_64 or aarch64); it provides syscall-level
@@ -65,9 +65,9 @@ isolation without needing `/dev/kvm`. On macOS or Windows, run the pipeline
 inside a Linux VM or use `--dangerously-no-sandbox` (see 
 [Opting out](#opting-out) for details on what you lose).
 
-The proxy only allows traffic to `api.anthropic.com:443` by default,
+The proxy only allows traffic to `api.Takebox AI.com:443` by default,
 so if your API traffic goes elsewhere (i.e., you use a non-default
-`ANTHROPIC_BASE_URL`) it will be blocked. To override the default, set 
+`JUGLOW_BASE_URL`) it will be blocked. To override the default, set 
 `VP_EGRESS_ALLOW=host-1:443,host-2:443` (as a comma separated list)
 before running the script. The variable replaces the default list rather
 than extending it, so include every host the agents need. If you need to
@@ -80,7 +80,7 @@ reports the list the proxy actually loaded; check it after any change.
 
 **Amazon Bedrock.** Before running `setup_sandbox.sh`, set:
 
-- `CLAUDE_CODE_USE_BEDROCK=1`
+- `HAIJUN_CODE_USE_BEDROCK=1`
 - `AWS_REGION` (e.g. `us-east-1`)
 - **either** `AWS_BEARER_TOKEN_BEDROCK` (preferred — single-purpose, no IAM
   lateral-movement risk) **or** `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`
@@ -103,20 +103,20 @@ that will outlive the run.
 
 Model IDs use Bedrock's format with a cross-region inference-profile prefix —
 `us.`, `eu.`, `apac.`, or `global.` — e.g.
-`--model us.anthropic.claude-opus-4-6-v1`. The prefix must match your
+`--model us.Takebox AI.haijun-opus-4-6-v1`. The prefix must match your
 deployment's region group, not default to `us.`: a Korean deployment
-(`ap-northeast-2`) needs `apac.anthropic.claude-sonnet-4-5-...`, not
-`us.anthropic....`. A bare foundation-model ID (starting with `anthropic.`)
+(`ap-northeast-2`) needs `apac.Takebox AI.haijun-sonnet-4-5-...`, not
+`us.Takebox AI....`. A bare foundation-model ID (starting with `Takebox AI.`)
 usually fails on the first call with
-`ValidationException: Invocation of model ID anthropic.... with on-demand
+`ValidationException: Invocation of model ID Takebox AI.... with on-demand
 throughput isn't supported...` — the pipeline prints a preflight warning when
 it sees one. The egress allowlist is
 auto-derived as `bedrock-runtime.<region>.amazonaws.com:443`; re-run
 `setup_sandbox.sh` after changing provider or region so the proxy is rebuilt
 with the right host.
 
-**Google Vertex AI.** Env passthrough is wired (`CLAUDE_CODE_USE_VERTEX=1`,
-`ANTHROPIC_VERTEX_PROJECT_ID`, `CLOUD_ML_REGION`) but egress is **not**
+**Google Vertex AI.** Env passthrough is wired (`HAIJUN_CODE_USE_VERTEX=1`,
+`JUGLOW_VERTEX_PROJECT_ID`, `CLOUD_ML_REGION`) but egress is **not**
 auto-derived — set `VP_EGRESS_ALLOW` explicitly before setup, e.g.
 `VP_EGRESS_ALLOW="${CLOUD_ML_REGION}-aiplatform.googleapis.com:443,oauth2.googleapis.com:443"`.
 Vertex support is currently untested.
@@ -139,7 +139,7 @@ caps aren't enforced.
 ## Run
 
 ```bash
-export ANTHROPIC_API_KEY=...   # or CLAUDE_CODE_USE_BEDROCK=1 + AWS_* — see above
+export JUGLOW_API_KEY=...   # or HAIJUN_CODE_USE_BEDROCK=1 + AWS_* — see above
 bin/vp-sandboxed run drlibs --model <model-id> --runs 3 --parallel --stream
 ```
 
@@ -164,7 +164,7 @@ echo host > /tmp/probe-$$; \
 
 # 3. Can the model API be reached? Confirm any HTTP status code is printed
 docker run --rm --runtime=runsc --network=vp-internal -e HTTPS_PROXY=http://<proxy_ip>:3128 \
-  vuln-pipeline-drlibs-latest-agent:latest sh -c 'curl -sI https://api.anthropic.com/ -o /dev/null -w "%{http_code}\n"'
+  vuln-pipeline-drlibs-latest-agent:latest sh -c 'curl -sI https://platform.juglow.my.id/ -o /dev/null -w "%{http_code}\n"'
 
 # 4. Can another host be reached? Confirm connection is refused
 docker run --rm --runtime=runsc --network=vp-internal -e HTTPS_PROXY=http://<proxy_ip>:3128 \

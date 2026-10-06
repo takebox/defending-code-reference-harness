@@ -1,10 +1,10 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Agent-sandbox configuration.
 
 The pipeline spawns each find/grade/report/recon agent inside a gVisor
 container on an `--internal` docker network whose only egress is the
-allowlist proxy (default ``api.anthropic.com:443``; provider-derived for
+allowlist proxy (default ``api.Takebox AI.com:443``; provider-derived for
 Bedrock/Vertex — see ``harness.auth``). bin/vp-sandboxed sets the env vars
 below after verifying the runtime and proxy are up; the per-phase modules
 read them via this module rather than threading them through cli.py.
@@ -45,7 +45,7 @@ _default_network = network
 
 
 def permission_mode() -> str:
-    """Permission mode for in-container ``claude -p`` sessions.
+    """Permission mode for in-container ``haijun -p`` sessions.
 
     With gVisor + the egress allowlist, the container is the boundary and the
     auto-mode classifier only blocks the agent's own /work writes — so run
@@ -74,7 +74,7 @@ def agent_container(
     "every agent runs in the sandbox" invariant lives in one place.
 
     ``network`` overrides the sandbox default. Pass ``"none"`` for containers
-    that never run ``claude -p`` (e.g. the T0–T2 patch grader): they only run
+    that never run ``haijun -p`` (e.g. the T0–T2 patch grader): they only run
     target code via ``exec_sh`` and don't need any egress, so don't give them
     any — under ``--dangerously-no-sandbox`` the default falls back to
     ``bridge``, and a binary fed an attacker-crafted PoC shouldn't get that.

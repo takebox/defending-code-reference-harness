@@ -344,8 +344,7 @@ def score(submission: object, gt: dict) -> dict:
         False,
         any(
             sqli["attacker_ip"] in _blob(inc) and idor["attacker_ip"] in _blob(inc)
-            for inc in incidents
-        )
+            for inc in incidents )
         or str(link["cracked_password"]).lower() in _blob(submission),
         "the credential-dump → account-takeover chain is connected",
     )

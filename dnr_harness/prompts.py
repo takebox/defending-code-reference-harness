@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Prompts for the dnr-pipeline hunt and grade agents.
 
@@ -102,8 +102,7 @@ INCIDENTS_SCHEMA = """\
 
 
 def build_hunt_prompt(
-    *, port: int, logs_listing: str, seed_command: str, app_command: str
-) -> str:
+    *, port: int, logs_listing: str, seed_command: str, app_command: str ) -> str:
     # seed/app commands come from the target's config.yaml (target-relative
     # paths); the app tree lands at /work/app in-container, so they run
     # verbatim from /work
@@ -164,5 +163,4 @@ confirmed incident's PoC verified</overall>
 
 def build_dnr_grade_prompt(*, port: int, seed_command: str, app_command: str) -> str:
     return GRADE_PROMPT_TEMPLATE.format(
-        port=port, seed_command=seed_command, app_command=app_command
-    )
+        port=port, seed_command=seed_command, app_command=app_command )

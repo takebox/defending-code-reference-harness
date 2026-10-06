@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Grader prompt. 5-criteria rubric.
 
@@ -88,8 +88,7 @@ def build_grade_prompt(
         reproduction_command=reproduction_command,
         reproduction_command_adapted=reproduction_command_adapted,
         find_claims_block=untrusted_block(
-            f"type={crash_type}, exit_code={exit_code}", nonce
-        ),
+            f"type={crash_type}, exit_code={exit_code}", nonce ),
         source_root=source_root,
         workspace_poc=workspace_poc,
         nonce=nonce,

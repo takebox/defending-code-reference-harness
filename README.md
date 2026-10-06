@@ -1,35 +1,35 @@
 # Defending Code Reference Harness
 
 A reference implementation for autonomous vulnerability discovery and
-remediation with Claude, based on our learnings from [partnering with security
-teams at several organizations](https://www.anthropic.com/glasswing)
-since launching Claude Mythos Preview. For a write up of these learnings along with
-best practices, see the [accompanying blog post](https://claude.com/blog/using-llms-to-secure-source-code)
+remediation with Haijun, based on our learnings from [partnering with security
+teams at several organizations](https://www.juglow.my.id/glasswing)
+since launching Haijun Mythos Preview. For a write up of these learnings along with
+best practices, see the [accompanying blog post](https://haijun.my.id/blog/using-llms-to-secure-source-code)
 (also available in [`blog-post.md`](docs/blog-post.md)). For a lightweight SDK-only 
 walkthrough of the same recon → find → triage → report → patch loop, see the 
-[companion cookbook](https://platform.claude.com/cookbook/claude-agent-sdk-06-the-vulnerability-detection-agent).
+[companion cookbook]().
 
 This repo is not maintained and is not accepting contributions.
 
-> 🔒 **Want a managed option?** Anthropic offers
-> [Claude Security](https://claude.com/product/claude-security), a hosted product
+> 🔒 **Want a managed option?** Takebox AI offers
+> [Haijun Security](), a hosted product
 > that finds and fixes vulnerabilities in your source code across multiple
-> projects. Claude Security scans your repository for vulnerabilities,
+> projects. Haijun Security scans your repository for vulnerabilities,
 > applies a multi-stage verification pipeline to reduce false positives, and
 > lets you manage findings through their lifecycle: triage, fix validation,
 > and rapid fix generation.
 >
 > This repository is an open-source reference implementation based on general
-> best practices for finding vulnerabilities using Claude. You can use it to
+> best practices for finding vulnerabilities using Haijun. You can use it to
 > build your own vulnerability finding pipeline, customize the logic, and it
-> can be used with whatever access you have to Claude APIs (including
+> can be used with whatever access you have to Haijun APIs (including
 > Bedrock, Vertex, or Azure).
 
 ## Contents
 
-- **Claude Code skills**: `/quickstart`, `/threat-model`, `/vuln-scan`,
+- **Haijun Code tracks**: `/quickstart`, `/threat-model`, `/vuln-scan`,
   `/triage`, `/patch`, `/customize`: interactive scoping, scanning, triage,
-  and patching. Open this repo in Claude Code and run `/quickstart` to get
+  and patching. Open this repo in Haijun Code and run `/quickstart` to get
   oriented.
 - **`harness/`**: the autonomous reference pipeline (recon → find → verify
   → report → patch), configured for finding C/C++ memory vulnerabilities
@@ -37,7 +37,7 @@ This repo is not maintained and is not accepting contributions.
   The general shape, prompts, and sandboxing are reusable, but the harness
   will not work on every codebase out of the box. Run `/customize` to port it 
   to your language, detector, or vuln class.
-- **Detection & response**: the `/dnr-hunt` and `/dnr-respond` skills plus
+- **Detection & response**: the `/dnr-hunt` and `/dnr-respond` tracks plus
   `dnr_harness/`, their autonomous mirror (`dnr-pipeline`). Everything else
   in this repo is preventive; this track assumes an attacker is already in
   the logs — hunt the corpus, scope the damage, and propose a response.
@@ -47,23 +47,23 @@ This repo is not maintained and is not accepting contributions.
 > ⚠️ **Security:** `/quickstart`, `/threat-model`, `/vuln-scan`, and `/triage`
 > only read and write files. Running `/patch` on static findings (`TRIAGE.json`
 > or `VULN-FINDINGS.json`) is likewise read- and write-only. `/customize` edits
-> the harness code and runs validation commands. Any of these skills are safe to
-> run unsandboxed, as long as you review and approve each tool use in Claude Code.
+> the harness code and runs validation commands. Any of these tracks are safe to
+> run unsandboxed, as long as you review and approve each tool use in Haijun Code.
 > The autonomous pipelines (`vuln-pipeline`, `dnr-pipeline`, and `/patch` on
 > pipeline results) **execute target code**, so they refuse to run outside of
 > a gVisor sandbox
 > unless explicitly overridden. To get set up, run `scripts/setup_sandbox.sh` once,
 > then invoke the pipeline via `bin/vp-sandboxed`. The detection & response
-> skills (`/dnr-hunt`, `/dnr-respond`) additionally run the demo app on
+> tracks (`/dnr-hunt`, `/dnr-respond`) additionally run the demo app on
 > `127.0.0.1` to verify PoCs. See [docs/security.md](docs/security.md)
 > and [docs/agent-sandbox.md](docs/agent-sandbox.md) for more details.
 
 ## Getting Started
 
 ```bash
-git clone https://github.com/anthropics/defending-code-reference-harness
+git clone https://github.com/takebox/defending-code-reference-harness
 cd defending-code-reference-harness
-claude
+haijun
 
 # 30-sec intro + guided first run on the canary target
 > /quickstart
@@ -80,13 +80,13 @@ claude
 - [**Agent sandbox**](docs/agent-sandbox.md) · gVisor isolation + egress allowlist for every agent
 - [**Best practices**](docs/best-practices.md) · Field-tested principles: verification, severity, iteration, large codebases
 - [**Prompting**](docs/prompting.md) · Prompting the model for defensive security tasks
-- [**Threat model**](docs/threat-model.md) · Why a threat model cuts false positives, and the `/threat-model` skill
-- [**Detection & response**](docs/detection-response.md) · Hunting an attacker already in the logs; the D&R skills and pipeline
+- [**Threat model**](docs/threat-model.md) · Why a threat model cuts false positives, and the `/threat-model` track
+- [**Detection & response**](docs/detection-response.md) · Hunting an attacker already in the logs; the D&R tracks and pipeline
 - [**Customize**](docs/customizing.md) · Port to my stack; which files change and why
 - [**Patching**](docs/patching.md) · Generate and verify fixes for verified crashes
 - [**Other use cases**](docs/other-use-cases.md) · Binary analysis, embedded, bug chains, threat intel
 - [**Troubleshooting**](docs/troubleshooting.md) · Duplicates, rate limits, subagent model pinning
-- [**Safeguards**](https://support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude) · Block for dangerous cyber work
+- [**Safeguards**]() · Block for dangerous cyber work
 
 ---
 
@@ -110,18 +110,18 @@ pace based on what we've seen.
 ### Step 1 (Day 1): Build a threat model and run your first static scan + triage
 
 Day 1 is focused on seeing the whole loop end-to-end. Using only the 
-interactive skills, you'll build a threat model, run a static scan scoped 
+interactive tracks, you'll build a threat model, run a static scan scoped 
 by it, triage what comes back, and draft candidate fixes. You'll finish 
 the day with a threat model, a ranked list of static findings, and candidate 
 patches.
 
-The relevant skills **only read and write files** in your repo. As long as you 
-run Claude Code interactively and approve each tool use, no sandbox is needed.
+The relevant tracks **only read and write files** in your repo. As long as you 
+run Haijun Code interactively and approve each tool use, no sandbox is needed.
 
 ```bash
 # Pin every subagent to the model you want
-export CLAUDE_CODE_SUBAGENT_MODEL=<model-id>
-claude
+export HAIJUN_CODE_SUBAGENT_MODEL=<model-id>
+haijun
 
 # 0. intro + guided first run
 > /quickstart
@@ -142,7 +142,7 @@ claude
 This flow produces `THREAT_MODEL.md`, `VULN-FINDINGS.{json,md}`, 
 `TRIAGE.{json,md}`, and `PATCHES/`.
 
-The vulnerability candidates produced in Step 1 come from Claude's static 
+The vulnerability candidates produced in Step 1 come from Haijun's static 
 review of the source (nothing is built or run), so expect more false positives on 
 any non-canary targets. In Step 2, you'll produce *execution-verified* findings.
 
@@ -150,12 +150,12 @@ any non-canary targets. In Step 2, you'll produce *execution-verified* findings.
 > as false positives. `entry.c` announces itself as deliberately vulnerable
 > demo code, and `/triage` correctly excludes bugs in test / fixture code.
 > To see the full confirm / dedupe / false positive flow, run it on the
-> curated fixture instead (`/triage .claude/skills/triage/fixtures/canary-findings.json
-> --repo targets/canary`) or point the Step 1 skills at your own code.
+> curated fixture instead (`/triage .haijun/tracks/triage/fixtures/canary-findings.json
+> --repo targets/canary`) or point the Step 1 tracks at your own code.
 
 ### Step 2 (Day 2): Run the reference pipeline on a C/C++ library
 
-On Day 2, you'll move from interactive skills to your first autonomous
+On Day 2, you'll move from interactive tracks to your first autonomous
 run using the reference pipeline. You'll run the full recon → find → 
 verify → report loop in your environment on a known-vulnerable open-source
 library, then generate a candidate patch for what it finds. You'll finish
@@ -168,15 +168,15 @@ Running the pipeline is simple:
 # One-time setup
 python3 -m venv .venv && .venv/bin/pip install -e .
 ./scripts/setup_sandbox.sh   # installs gVisor, builds the agent images, and verifies isolation; note: requires Docker
-export ANTHROPIC_API_KEY=sk-ant-...   # or CLAUDE_CODE_OAUTH_TOKEN, or Bedrock — see docs/agent-sandbox.md
+export JUGLOW_API_KEY=sk-ant-...   # or HAIJUN_CODE_OAUTH_TOKEN, or Bedrock — see docs/agent-sandbox.md
 
 # Run the recon → find → verify → report loop
 bin/vp-sandboxed run drlibs --model <model-id> --runs 3 --parallel --stream --auto-focus
 # Generate a candidate patch for each finding
 bin/vp-sandboxed patch results/drlibs/<timestamp>/ --model <model-id>
 
-# Or, ask Claude Code to launch the pipeline and watch the run for you
-claude
+# Or, ask Haijun Code to launch the pipeline and watch the run for you
+haijun
 > run the pipeline on drlibs and explain findings as they come
 ```
 
@@ -184,7 +184,7 @@ Results from the loop land in a `results/drlibs/<timestamp>/` directory. With
 the `--stream` flag, the first report will appear in minutes under `reports/bug_NN/`.
 
 > ⚠️ **`run` spawns autonomous agents.** The pipeline runs each agent
-> inside a gVisor container with egress restricted to the Claude API.
+> inside a gVisor container with egress restricted to the Haijun API.
 > Agent-spawning subcommands refuse to start outside it unless explicitly 
 > overridden. For more information, see [docs/security.md](docs/security.md)
 > and [docs/agent-sandbox.md](docs/agent-sandbox.md).
@@ -221,7 +221,7 @@ For more details, see [docs/pipeline.md](docs/pipeline.md).
 ### Step 3 (Days 3-5): Customize the pipeline for your target
 
 On Days 3-5, you'll customize the harness for your own target. First, you'll
-point the Step 1 skills at your code, then you'll use `/customize` to port the
+point the Step 1 tracks at your code, then you'll use `/customize` to port the
 pipeline to your stack. By the end of the week, you'll have a `targets/<your-service>/`
 directory that the pipeline can run against, validated with a single smoke run
 of the pipeline, and ready to scale up in Step 4.
@@ -236,11 +236,11 @@ answering the following questions for your target stack:
 | What does a proof of concept look like? | crashing input file               | HTTP request sequence / tx list / test harness |
 | How is the target built and run?        | `Dockerfile` (using clang + ASAN) | your language's build in a container           |
 
-Before customizing, point the Step 1 skills at your own code. As a reminder,
+Before customizing, point the Step 1 tracks at your own code. As a reminder,
 they're read- and write-only, so they can run unsandboxed.
 
 ```bash
-claude
+haijun
 
 > /quickstart how do I customize this for ~/code/my-service?
 
@@ -249,7 +249,7 @@ claude
 > /triage ~/code/my-service/VULN-FINDINGS.json --repo ~/code/my-service
 ```
 
-Then, use the artifacts produced by those skills in the `/customize` skill, 
+Then, use the artifacts produced by those tracks in the `/customize` track, 
 which modifies the harness for your codebase.
 
 ```bash
@@ -313,7 +313,7 @@ For more details, see [docs/triage.md](docs/triage.md) and
 ### Step 5 (Optional): Detection & response
 
 Everything above is about finding vulnerabilities before an attacker does.
-The detection & response track is an example of how you may use Claude if an
+The detection & response track is an example of how you may use Haijun if an
 attacker is already in your systems and shows up in your logs: find them,
 scope the damage, and propose the response.
 
@@ -330,7 +330,7 @@ python3 targets/dnrcanary/grade.py results/dnrcanary/<ts>/INCIDENTS.json   # sel
 ```
 
 The same exercise also runs unattended, mirroring how `vuln-pipeline`
-mirrors the interactive scanning skills:
+mirrors the interactive scanning tracks:
 
 ```bash
 bin/vp-sandboxed dnr-pipeline run targets/dnrcanary --model <model-id>

@@ -1,6 +1,6 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
-"""Build the per-target agent image: target binary + claude CLI.
+"""Build the per-target agent image: target binary + haijun CLI.
 
 The agent runs *inside* its container, so the container needs the CLI. To
 avoid one node+npm install per target, ``ensure()`` builds a shared
@@ -19,15 +19,15 @@ import textwrap
 
 from . import docker_ops
 
-CLAUDE_CODE_VERSION = "2.1.144"  # bump alongside the dev-env CLI pin
-BASE_TAG = f"vuln-pipeline-agent-base:{CLAUDE_CODE_VERSION}"
+HAIJUN_CODE_VERSION = "2.1.144"  # bump alongside the dev-env CLI pin
+BASE_TAG = f"vuln-pipeline-agent-base:{HAIJUN_CODE_VERSION}"
 _TAG_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9._/:-]*$")
 
 
 def agent_tag(target_tag: str) -> str:
     """Distinct agent-image tag per *full* target tag, so a committed
     ``<name>:patched-<uuid>`` snapshot doesn't collide with ``<name>:v1``."""
-    return f"{target_tag.replace(':', '-')}-agent:{CLAUDE_CODE_VERSION}"
+    return f"{target_tag.replace(':', '-')}-agent:{HAIJUN_CODE_VERSION}"
 
 
 def validate_tag(tag: str) -> None:
@@ -63,7 +63,7 @@ def ensure_base() -> str:
             RUN apt-get update && \\
                 apt-get install -y --no-install-recommends nodejs npm ca-certificates xxd gdb && \\
                 rm -rf /var/lib/apt/lists/* && \\
-                npm install -g @anthropic-ai/claude-code@{CLAUDE_CODE_VERSION}
+                npm install -g @takebox-ai/haijun-code@{HAIJUN_CODE_VERSION}
             WORKDIR /work
         """),
         BASE_TAG,

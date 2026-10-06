@@ -116,7 +116,7 @@ The `kind: dnr` marker routes the target: vuln-pipeline refuses it, and
 dnr-pipeline refuses targets without it. The commands and paths below are
 the contract — dnrcanary's filenames (`generate_logs.py`,
 `ground_truth.yaml`, `grade.py`) are conventions, not requirements.
-`seed_command` and `app_command` are run by the /dnr-* skills from the
+`seed_command` and `app_command` are run by the /dnr-* tracks from the
 target directory and rendered into the pipeline's hunt/grade prompts,
 where they run from `/work` in-container (your `app/` tree lands at
 `/work/app`) — keep their paths target-relative.

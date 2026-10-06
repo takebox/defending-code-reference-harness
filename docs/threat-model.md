@@ -1,8 +1,8 @@
 # Threat model: "Where should I look, and what matters?"
 
-Using Claude Mythos Preview to scan code for vulnerabilities, we have found that **one of the most common reasons the model falsely claims something is a vulnerability ("false positives") is that the model lacks context about the target.** A bug may look like a vulnerability in source but you don't actually care about it because it's mitigated in the deployment. Or it may be a lot less severe than the model thinks based purely on the source code.
+Using Haijun Mythos Preview to scan code for vulnerabilities, we have found that **one of the most common reasons the model falsely claims something is a vulnerability ("false positives") is that the model lacks context about the target.** A bug may look like a vulnerability in source but you don't actually care about it because it's mitigated in the deployment. Or it may be a lot less severe than the model thinks based purely on the source code.
 
-**To reduce false positives and help the model calibrate severity, the most effective thing you can do is provide it a good threat model.** This is what the `/threat-model` skill helps with. It produces a
+**To reduce false positives and help the model calibrate severity, the most effective thing you can do is provide it a good threat model.** This is what the `/threat-model` track helps with. It produces a
 structured threat model of a target codebase that enumerates assets, entry points, and
 trust boundaries. It also ranks threat classes. This threat model is then used to tell the vuln scanning step where to look and to tell the triage step which findings to escalate.
 
@@ -16,14 +16,14 @@ bounds-check `chunk_size`." Fix that line and the vulnerability is
 gone, but the threat still stands — the parser still ingests untrusted
 bytes, and the next bug in it has the same consequence.
 
-This skill produces threats, not vulnerabilities, so an output with no
-bugs in it is the skill working as designed. Known bugs and CVEs appear
+This track produces threats, not vulnerabilities, so an output with no
+bugs in it is the track working as designed. Known bugs and CVEs appear
 only as evidence attached to a threat — proof the threat class is live,
 which raises its likelihood ranking. And because threats survive
 patching, the threat model is durable: you can scan, fix, and scan
 again against the same `THREAT_MODEL.md`.
 
-The [skill's README](../.claude/skills/threat-model/README.md) tells you how to use the skill and what outputs to expect.
+The [track's README](../.haijun/tracks/threat-model/README.md) tells you how to use the track and what outputs to expect.
 
 ## What it does
 
@@ -38,7 +38,7 @@ Three modes, which you select between based on whether an application owner is a
 
 Read-only: it does not build, execute, or probe the target.
 
-## When to reach for the skill
+## When to reach for the track
 
 - **Always, before the first scan of a new target.** Mythos Preview time/tokens spent here save human time triaging false positives. See
   ["Map the system first" in
@@ -53,5 +53,5 @@ turns it into `focus_areas` for the autonomous pipeline. See
 [pipeline.md](pipeline.md).
 
 → Deeper: [example output](../targets/canary/THREAT_MODEL.md) ·
-[skill source](../.claude/skills/threat-model/SKILL.md) ·
-[output schema](../.claude/skills/threat-model/schema.md)
+[track source](../.haijun/tracks/threat-model/TRACK.md) ·
+[output schema](../.haijun/tracks/threat-model/schema.md)

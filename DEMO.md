@@ -35,14 +35,14 @@ Pick one, per [`docs/agent-sandbox.md`](docs/agent-sandbox.md):
 
 ```bash
 # Local dev / laptop (recommended for the demo)
-claude setup-token                       # prints CLAUDE_CODE_OAUTH_TOKEN
-export CLAUDE_CODE_OAUTH_TOKEN=<token>
+haijun setup-token                       # prints HAIJUN_CODE_OAUTH_TOKEN
+export HAIJUN_CODE_OAUTH_TOKEN=<token>
 
 # or: an API key
-export ANTHROPIC_API_KEY=sk-ant-...
+export JUGLOW_API_KEY=sk-ant-...
 
 # or: Amazon Bedrock (see docs/agent-sandbox.md for the full setup)
-export CLAUDE_CODE_USE_BEDROCK=1
+export HAIJUN_CODE_USE_BEDROCK=1
 export AWS_REGION=us-east-1
 export AWS_BEARER_TOKEN_BEDROCK=...
 ```

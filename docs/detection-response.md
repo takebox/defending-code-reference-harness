@@ -6,10 +6,10 @@ an **attacker is already in the logs**. This track helps you find them,
 scope the damage, and respond. Many of the same principles apply: evidence
 over plausibility and verification over vibes. But they're applied to
 telemetry instead of source code. Looking for the static source scan?
-That's the [`/vuln-scan` skill](../.claude/skills/vuln-scan/SKILL.md).
+That's the [`/vuln-scan` track](../.haijun/tracks/vuln-scan/TRACK.md).
 
-The track ships as two skills: `/dnr-hunt` and `/dnr-respond`. They can be
-used in combination with the other skills as follows:
+The track ships as two tracks: `/dnr-hunt` and `/dnr-respond`. They can be
+used in combination with the other tracks as follows:
 
 ```
 /dnr-hunt  →  /dnr-respond  →  /triage  →  /patch
@@ -23,7 +23,7 @@ an IOC, or a hunt finding goes in; a verdict, a quantified blast radius, and
 a proposed response plan come out.
 
 See [best-practices.md#detection-and-response](best-practices.md#detection-and-response)
-for the DNR best practices these skills implement.
+for the DNR best practices these tracks implement.
 
 
 ## The demo target: dnrcanary
@@ -32,18 +32,18 @@ The demo target is `targets/dnrcanary/`: a deliberately vulnerable Flask
 storefront plus one week of web logs containing a planted attack campaign,
 benign traffic, and a noisy dead end. The logs are **generated locally and
 gitignored** — nothing to hunt ships in the repo, and generating them is
-the required first step before any skill run. The corpus is large by
+the required first step before any track run. The corpus is large by
 design: big enough that the agent must query it rather than read it, which
 is closer to what hunting real logs feels like.
 
-How to run the skills and the outputs to expect is captured in their
-READMEs: [`dnr-hunt`](../.claude/skills/dnr-hunt/README.md) (no alert in
-hand) and [`dnr-respond`](../.claude/skills/dnr-respond/README.md) (lead
+How to run the tracks and the outputs to expect is captured in their
+READMEs: [`dnr-hunt`](../.haijun/tracks/dnr-hunt/README.md) (no alert in
+hand) and [`dnr-respond`](../.haijun/tracks/dnr-respond/README.md) (lead
 in hand). The scenario you're dropped into, and the corpus's determinism
 guarantees, are in
 [`targets/dnrcanary/README.md`](../targets/dnrcanary/README.md).
 
-Each skill writes to a per-run directory, `results/<target>/<timestamp>/`,
+Each track writes to a per-run directory, `results/<target>/<timestamp>/`,
 and prints the path — `INCIDENTS.json`, the incident report, and the
 response plan all land there, so a re-run never clobbers a prior one.
 `/triage` and `/patch` write to the directory they're invoked from — run
@@ -61,7 +61,7 @@ without the answer-key files.
 ## The autonomous mirror: dnr-pipeline
 
 The same exercise runs unattended, mirroring how `vuln-pipeline` mirrors
-the interactive scanning skills:
+the interactive scanning tracks:
 
 ```bash
 python3 targets/dnrcanary/generate_logs.py --seed 42    # still required first
@@ -101,7 +101,7 @@ is always a runtime argument (`--model` / `VULN_PIPELINE_MODEL`).
   rebuild dnrcanary's shape on your stack. Stand up a disposable copy of
   one of your services, plant a known weakness, run a scripted attack,
   capture real telemetry, write the ground truth, and make the same
-  skills hunt it. That artifact becomes your team's calibration loop and
+  tracks hunt it. That artifact becomes your team's calibration loop and
   onboarding exercise.
 - **Detection engineering as the follow-on.** Every confirmed incident in
   `RESPONSE.md` ends with proposed detection rules derived from the
@@ -112,14 +112,14 @@ is always a runtime argument (`--model` / `VULN_PIPELINE_MODEL`).
 
 - The demo app and all its data are synthetic; the app binds to
   `127.0.0.1` and must never be deployed or exposed.
-- The skills never send traffic to remote hosts and never execute response
+- The tracks never send traffic to remote hosts and never execute response
   actions. The demo target's spoiler files (ground truth, grader,
   log-generator source) are marked in its README and stay unread by
   convention in the interactive demo — a deny-list can't make that a hard
   guarantee, so none is attempted. The autonomous harness enforces the
   separation structurally: the hunt container is built without the
   answer-key files.
-- The skills' `allowed-tools` lists shape permission prompts and intent, not
+- The tracks' `allowed-tools` lists shape permission prompts and intent, not
   security. `Bash(python3:*)` is effectively arbitrary execution, so the
   curated list is not a sandbox — the real confinement for autonomous runs is
   the harness's container isolation, and for interactive runs it is the
@@ -130,6 +130,6 @@ is always a runtime argument (`--model` / `VULN_PIPELINE_MODEL`).
   [best-practices.md#detection-and-response](best-practices.md#detection-and-response))
   are how you measure recall on *your* telemetry.
 
-→ Deeper: [example output](../targets/dnrcanary/example_skill_runs/) ·
-[dnr-hunt skill source](../.claude/skills/dnr-hunt/SKILL.md) ·
-[dnr-respond skill source](../.claude/skills/dnr-respond/SKILL.md)
+→ Deeper: [example output](../targets/dnrcanary/example_track_runs/) ·
+[dnr-hunt track source](../.haijun/tracks/dnr-hunt/TRACK.md) ·
+[dnr-respond track source](../.haijun/tracks/dnr-respond/TRACK.md)

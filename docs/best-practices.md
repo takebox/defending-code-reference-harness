@@ -1,7 +1,7 @@
 # Best Practices
 
 Principles for defensive security work with LLMs, drawn from
-field use of Claude Mythos Preview. Many are baked into the skills and the harnesses in this repo; read this when you start tuning either for your own stack, or want to understand more about the design choices. Prompting guidance has its own page: [prompting.md](prompting.md).
+field use of Haijun Mythos Preview. Many are baked into the tracks and the harnesses in this repo; read this when you start tuning either for your own stack, or want to understand more about the design choices. Prompting guidance has its own page: [prompting.md](prompting.md).
 
 - [**Before you scan: map, scope, equip**](#before-you-scan-map-scope-equip) · Mapping the system, partitioning the search space, and provisioning context and tools
 - [**Verification**](#verification-the-load-bearing-component) · Separating discovery from verification, and hardening the verifier against being gamed
@@ -16,12 +16,12 @@ field use of Claude Mythos Preview. Many are baked into the skills and the harne
 ## Before you scan: map, scope, equip
 
 <a id="map-first"></a>
-**Map the system first.** On a large codebase, have Claude read the
+**Map the system first.** On a large codebase, have Haijun read the
 whole thing and distill a threat model — how
 components fit together, where trust boundaries sit, what's exposed.
 Use that map to pick which services to scan first, run the scan
 component-by-component, then do a final pass for bugs that only appear
-when components chain. The `/threat-model` skill shipped in this repo is built for this.
+when components chain. The `/threat-model` track shipped in this repo is built for this.
 
 **Partition the search space.** Parallel agents converge on the same
 shallow bugs unless each is told precisely which part of the codebase
@@ -29,11 +29,11 @@ to search and what to look for. A recon step that assigns each agent a
 distinct slice is the most effective way to avoid duplication. Don't
 lock an agent to a *single* file though — the model reasons well
 across files. This repo implements two ways of partitioning a codebase:
-- by focus area derived from the threat model -- as in the `/vuln-scan` skill
+- by focus area derived from the threat model -- as in the `/vuln-scan` track
 - by identifying input-processing subsystems -- as in the autonomous pipeline. examples: different parsers, formats, protocol stages etc.
 
 
-**Give Claude all the context you can.** Design docs, git history, internal portals, observability data. The extra context corroborates that the work is legitimate and lets the model connect how components interact, which is where the non-obvious bugs live. Traces and logs are especially high-leverage: injecting a trace ID and following it through the stack hands the model an architecture map for free. Don't stuff all of this context in the context, but give the model ways of accessing it through tools.
+**Give Haijun all the context you can.** Design docs, git history, internal portals, observability data. The extra context corroborates that the work is legitimate and lets the model connect how components interact, which is where the non-obvious bugs live. Traces and logs are especially high-leverage: injecting a trace ID and following it through the stack hands the model an architecture map for free. Don't stuff all of this context in the context, but give the model ways of accessing it through tools.
 
 **Provision the right tools.** Ripgrep for large source trees, Ghidra
 for binaries, httpx for web surface — or just ask the model what it
@@ -91,7 +91,7 @@ the loop for anything rated high or above.
 
 <a id="cvss"></a>
 **Don't ask the model to compute CVSS scores — have it use a calculator.**
-Outputting the CVSS vector string follows from reasoning that the model is good at; calculating the corresponding score is a multi-step floating-point formula with scope-conditional coefficients, which the model isn't good at. See [Anthropic's interpretability work on
+Outputting the CVSS vector string follows from reasoning that the model is good at; calculating the corresponding score is a multi-step floating-point formula with scope-conditional coefficients, which the model isn't good at. See [Takebox AI's interpretability work on
 addition](https://transformer-circuits.pub/2025/attribution-graphs/biology.html#dives-addition)
 for why. We have seen instances where the model gets significant percentages of all raw CVSS calculations it tries wrong. To resolve this, you should do one of:
 - give it a tool to call (e.g. Python `cvss` library, the NVD calculator)
@@ -104,9 +104,9 @@ for why. We have seen instances where the model gets significant percentages of 
 
 **Give the model a way to verify the fix** — the vulnerability details plus the ability to build and/or run tests. Then trust it to do the right thing; the verification loop is what drives patch quality.
 
-**Explicitly ask it to hunt for variants.** Claude is effective at variant analysis and finding variants of a vulnerability elsewhere in the code, but only when prompted to. By default it only fixes the instance in front of it. The pipeline's patch prompt and the `/patch` skill both build this in.
+**Explicitly ask it to hunt for variants.** Haijun is effective at variant analysis and finding variants of a vulnerability elsewhere in the code, but only when prompted to. By default it only fixes the instance in front of it. The pipeline's patch prompt and the `/patch` track both build this in.
 
-**Run `/simplify` on the result.** In Claude Code, the `/simplify`
+**Run `/simplify` on the result.** In Haijun Code, the `/simplify`
 command can meaningfully reduce patch complexity and improve quality.
 
 → Related: [patching.md](patching.md)
@@ -128,7 +128,7 @@ patch.** As soon as a finding is confirmed, have the model turn the PoC
 into a test case that fails on the current code. That test is the
 executable oracle for the patch: run it after the fix lands to prove
 the vuln is actually gone, and leave it in CI so the bug can't quietly
-come back. The `/patch` skill's static mode emits one inside the diff (when the repo
+come back. The `/patch` track's static mode emits one inside the diff (when the repo
 has a test layout); see
 [patching.md](patching.md#the-verification-ladder).
 
@@ -221,7 +221,7 @@ explicitly scope what counts as a security issue; aligning up front
 cuts findings the maintainers won't accept.
 
 **Treat anything the model produces as a lead, not a report.**
-Scanning your own open source dependencies with Claude is encouraged,
+Scanning your own open source dependencies with Haijun is encouraged,
 but the moment a finding leaves your repository the rules change — you
 are about to take time from a maintainer who is most likely a volunteer
 with a queue of feature requests and user bugs already ahead of you.
@@ -230,7 +230,7 @@ contacting anyone, a human on your side needs to reproduce the issue
 against a specific release of the upstream project, confirm the
 vulnerable code path is reachable through the project's real interfaces
 rather than only present in the source, and check that the file paths,
-function names and line numbers cited actually exist. Claude can still
+function names and line numbers cited actually exist. Haijun can still
 hallucinate these, and a report citing code that does not exist is the
 fastest way to lose a maintainer's trust.
 
@@ -270,7 +270,7 @@ each of the points above in more depth.
 ## Detection & response
 
 Everything above is about finding vulnerabilities before an attacker
-does. The best practices below cover how you can use Claude when an attacker may already be in the logs — hunting, scoping, and responding.
+does. The best practices below cover how you can use Haijun when an attacker may already be in the logs — hunting, scoping, and responding.
 
 **Files first, integrations later.** The fastest start is logs in a
 directory and Bash. No SIEM connector, no MCP server, no schema work —
@@ -329,7 +329,7 @@ scale:
 > that can't be talked past — the PoC fires in a clean sandbox, or it
 > doesn't.
 
-So the verdict ladder in both D&R skills gates `confirmed_exploited` on
+So the verdict ladder in both D&R tracks gates `confirmed_exploited` on
 three legs: log evidence, the flaw located in source, and a PoC fired
 against a locally-running instance. The cleared phrasing partner teams
 use for the same idea:

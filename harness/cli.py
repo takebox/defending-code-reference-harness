@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@
 Output: ./results/<target>/<timestamp>/{result.json,find_transcript.jsonl,
 grade_transcript.jsonl,poc.bin}; reports → .../reports/bug_NN/
 
-Auth: resolved by ``harness.auth`` (Bedrock / Vertex / ANTHROPIC_API_KEY /
-CLAUDE_CODE_OAUTH_TOKEN — one required; see docs/agent-sandbox.md).
+Auth: resolved by ``harness.auth`` (Bedrock / Vertex / JUGLOW_API_KEY /
+HAIJUN_CODE_OAUTH_TOKEN — one required; see docs/agent-sandbox.md).
 Model: --model flag, or VULN_PIPELINE_MODEL env var (required, one or the other).
 """
 from __future__ import annotations
@@ -84,7 +84,7 @@ def resolve_target_dir(target: str) -> Path:
 
 
 def terminate_subprocesses() -> None:
-    """SIGKILL all direct children. The SDK's claude subprocess (Node) does not
+    """SIGKILL all direct children. The SDK's haijun subprocess (Node) does not
     die when we do — it gets orphaned to init and keeps executing Bash tool
     calls against whatever container is named find_target. Observed running
     11+ hours after its parent died. Walk /proc, find PPID==us, kill.

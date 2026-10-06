@@ -1,6 +1,6 @@
 # Detection & response target — not a vuln-pipeline build target.
 # vuln-pipeline refuses kind: dnr; this config is consumed by the dnr track
-# (the /dnr-* skills and dnr-pipeline).
+# (the /dnr-* tracks and dnr-pipeline).
 kind: dnr
 description: >-
   Deliberately vulnerable Flask storefront plus a generated log corpus with a

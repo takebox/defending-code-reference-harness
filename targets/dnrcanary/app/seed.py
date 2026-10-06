@@ -163,18 +163,15 @@ def build(db_path: Path = DB_PATH) -> None:
         CREATE TABLE users (
             id INTEGER PRIMARY KEY, username TEXT UNIQUE NOT NULL,
             email TEXT NOT NULL, password_hash TEXT NOT NULL,
-            created_at TEXT NOT NULL
-        );
+            created_at TEXT NOT NULL );
         CREATE TABLE products (
             id INTEGER PRIMARY KEY, name TEXT NOT NULL,
-            description TEXT NOT NULL, price REAL NOT NULL
-        );
+            description TEXT NOT NULL, price REAL NOT NULL );
         CREATE TABLE orders (
             id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL,
             product_id INTEGER NOT NULL, quantity INTEGER NOT NULL,
             total REAL NOT NULL, ship_name TEXT NOT NULL,
-            ship_address TEXT NOT NULL, created_at TEXT NOT NULL
-        );
+            ship_address TEXT NOT NULL, created_at TEXT NOT NULL );
         """
     )
 

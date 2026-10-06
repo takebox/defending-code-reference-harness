@@ -90,6 +90,6 @@ Written blind against the public API — no tailoring to the known CVEs.
 `dr_wav.h` and `dr_flac.h` are **not** checked into this repo — the
 Dockerfile fetches them at build time from the pinned commit, so the
 vulnerable third-party source exists only inside the container. That's also
-why the static skills (`/threat-model`, `/vuln-scan`, `/triage`) demo on
+why the static tracks (`/threat-model`, `/vuln-scan`, `/triage`) demo on
 `canary` instead: they read source from the repo, and `targets/drlibs/`
 only has the dispatcher.

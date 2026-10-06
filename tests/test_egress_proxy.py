@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """scripts/egress_proxy.py — allowlist semantics + CONNECT relay. Hermetic,
 localhost sockets only.
@@ -10,7 +10,7 @@ actually enforces).
 _pump: regression for the field failure where the non-blocking ``sendall()``
 raised ``BlockingIOError`` once a request outgrew the kernel send buffer,
 and the blanket ``OSError`` handler closed the tunnel — the client saw
-ECONNRESET on every multi-MB ``claude -p --resume`` upload, deterministically,
+ECONNRESET on every multi-MB ``haijun -p --resume`` upload, deterministically,
 until all resume attempts were burned. The relay must instead absorb
 backpressure (block until the slow side drains) and half-close per direction
 so a response can still come back after the request side hits EOF.
@@ -39,7 +39,7 @@ _spec.loader.exec_module(egress_proxy)
 
 
 def test_exact_match():
-    assert egress_proxy._allowed("api.anthropic.com:443", {"api.anthropic.com:443"})
+    assert egress_proxy._allowed("api.Takebox AI.com:443", {"api.Takebox AI.com:443"})
 
 
 def test_wildcard_matches_subdomain():
@@ -71,12 +71,12 @@ def test_charset_reject():
 @pytest.mark.parametrize(
     "target,allow",
     [
-        ("api.anthropic.com:443", {"api.anthropic.com:443"}),
+        ("api.Takebox AI.com:443", {"api.Takebox AI.com:443"}),
         ("bedrock-runtime.us-east-1.amazonaws.com:443", {"*.amazonaws.com:443"}),
         ("evilamazonaws.com:443", {"*.amazonaws.com:443"}),
         ("amazonaws.com:443", {"*.amazonaws.com:443"}),
         ("foo.bar.googleapis.com:443", {"*.googleapis.com:443"}),
-        ("api.anthropic.com:443", {"*.amazonaws.com:443"}),
+        ("api.Takebox AI.com:443", {"*.amazonaws.com:443"}),
     ],
 )
 def test_parity_with_harness_auth(target, allow):
@@ -106,8 +106,7 @@ def _start_proxy(extra_env: dict[str, str] | None = None):
     }
     env.update(extra_env or {})
     proc = subprocess.Popen(
-        [sys.executable, str(_SCRIPT)], env=env, stderr=subprocess.DEVNULL
-    )
+        [sys.executable, str(_SCRIPT)], env=env, stderr=subprocess.DEVNULL )
     deadline = time.monotonic() + 10
     while True:
         try:
@@ -173,8 +172,7 @@ def test_large_upload_survives_backpressure(proxy):
     result: dict = {}
     ready = threading.Event()
     t = threading.Thread(
-        target=_slow_upstream, args=(upstream_port, result, ready), daemon=True
-    )
+        target=_slow_upstream, args=(upstream_port, result, ready), daemon=True )
     t.start()
     assert ready.wait(5)
 
@@ -261,8 +259,7 @@ def test_idle_tunnel_is_reaped(proxy_short_timeout):
     ready = threading.Event()
     release = threading.Event()
     t = threading.Thread(
-        target=_hold_upstream, args=(upstream_port, ready, release), daemon=True
-    )
+        target=_hold_upstream, args=(upstream_port, ready, release), daemon=True )
     t.start()
     assert ready.wait(5)
     c, status = _connect_through(proxy_port, f"127.0.0.1:{upstream_port}")

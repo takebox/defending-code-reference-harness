@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Patch loop: fresh container, patch agent writes a fix, grader verifies it.
 
@@ -73,8 +73,7 @@ async def run_patch(
         memory=target.memory_limit, shm_size=target.shm_size,
     ) as container:
         await asyncio.to_thread(
-            docker_ops.write_file, container, "/tmp/poc.bin", crash.poc_bytes
-        )
+            docker_ops.write_file, container, "/tmp/poc.bin", crash.poc_bytes )
         adapted_cmd = crash.reproduction_command.replace(crash.poc_path, "/tmp/poc.bin")
         # Ensure source_root is a git repo with a baseline commit so the
         # agent's `git diff` is deterministic. Gitignore the built binary so
@@ -160,8 +159,7 @@ async def run_patch(
             timings[f"grade_it{it}"] = time.time() - t0
 
             _write_result(
-                out_dir, diff, verdict, rationale, variants, bypass, iterations, timings
-            )
+                out_dir, diff, verdict, rationale, variants, bypass, iterations, timings )
             if verdict.passed:
                 return diff, verdict, result
 

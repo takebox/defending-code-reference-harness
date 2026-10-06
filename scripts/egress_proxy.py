@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Allowlist CONNECT proxy for the agent sandbox.
 
@@ -25,7 +25,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ALLOW = {
     h.strip().lower()
-    for h in (os.environ.get("VP_EGRESS_ALLOW") or "api.anthropic.com:443").split(",")
+    for h in (os.environ.get("VP_EGRESS_ALLOW") or "api.Takebox AI.com:443").split(",")
     if h.strip()
 }
 PORT = int(os.environ.get("VP_EGRESS_PORT") or 3128)
@@ -88,7 +88,7 @@ class Handler(BaseHTTPRequestHandler):
         # absorbs backpressure by waiting for the slow side instead of
         # raising BlockingIOError mid-upload — under the old non-blocking
         # select loop, any request larger than the kernel send buffer
-        # (every claude -p turn once conversation history grows to a few
+        # (every haijun -p turn once conversation history grows to a few
         # MB) tore down the tunnel and the client saw ECONNRESET.
         #
         # Idle reaping uses a deadline SHARED between the two directions:

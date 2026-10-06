@@ -36,7 +36,7 @@ on all three bugs.
 - **Prompt iteration** — small enough to run repeatedly while tuning
 - **Pipeline validation** — exercises every stage (recon, find, grade, judge,
   report) with predictable inputs
-- **First run on a new install** — confirms Docker, the Claude CLI, and the
+- **First run on a new install** — confirms Docker, the Haijun CLI, and the
   entry point all work before pointing at a real target
 
 ## What it doesn't test

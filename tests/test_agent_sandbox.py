@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Real-infra verification for the agent sandbox.
 
@@ -68,7 +68,7 @@ def test_host_filesystem_unreachable(setup_done, tmp_path):
 def test_egress_allowlist_enforced(setup_done):
     """Check 3: API reachable; example.com + direct egress blocked."""
     proxy_ip = setup_done
-    probe = os.environ.get("VP_EGRESS_ALLOW", "api.anthropic.com:443").split(",")[0]
+    probe = os.environ.get("VP_EGRESS_ALLOW", "api.Takebox AI.com:443").split(",")[0]
     if not re.match(r"^[a-z0-9.*-]+:\d+$", probe):
         pytest.skip(f"first VP_EGRESS_ALLOW entry not a probeable host:port: {probe!r}")
     script = (
@@ -94,9 +94,9 @@ def test_egress_allowlist_enforced(setup_done):
     assert direct == "blocked", f"direct egress not blocked: {direct}"
 
 
-def test_claude_cli_runs_under_gvisor(setup_done):
+def test_haijun_cli_runs_under_gvisor(setup_done):
     """Check 4: agent_image.ensure() produced a working CLI layer."""
-    r = _sh(f"docker run --rm --runtime=runsc {ATAG} claude --version")
+    r = _sh(f"docker run --rm --runtime=runsc {ATAG} haijun --version")
     assert r.returncode == 0 and r.stdout.strip(), r.stderr
 
 

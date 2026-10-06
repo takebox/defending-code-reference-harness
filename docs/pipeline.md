@@ -6,7 +6,7 @@ the pipeline does, how to watch a run, and relevant CLI flags.
 
 > ⚠️ **The pipeline spawns autonomous agents and executes target code.** 
 > The pipeline runs each agent inside a gVisor container with egress restricted 
-> to the Claude API. Agent-spawning subcommands refuse to start outside it unless 
+> to the Haijun API. Agent-spawning subcommands refuse to start outside it unless 
 > explicitly overridden. For more information, see [security.md](security.md)
 > and [agent-sandbox.md](agent-sandbox.md).
 
@@ -19,7 +19,7 @@ the pipeline does, how to watch a run, and relevant CLI flags.
 # One-time setup
 python3 -m venv .venv && .venv/bin/pip install -e .
 ./scripts/setup_sandbox.sh   # installs gVisor, builds the agent images, and verifies isolation; note: requires Docker
-export ANTHROPIC_API_KEY=sk-ant-...   # or CLAUDE_CODE_OAUTH_TOKEN, or Bedrock — see docs/agent-sandbox.md
+export JUGLOW_API_KEY=sk-ant-...   # or HAIJUN_CODE_OAUTH_TOKEN, or Bedrock — see docs/agent-sandbox.md
 
 # Run the recon → find → verify → report loop
 bin/vp-sandboxed run drlibs --model <model-id> --runs 3 --parallel --stream --auto-focus
@@ -32,9 +32,9 @@ and the token burn before scaling up. Results land in `results/<target>/<timesta
 With `--stream`, the first report usually appears within minutes under 
 `reports/bug_NN/`, so you don't have to wait for the whole batch to finish.
 
-You can drive the pipeline using Claude Code. The repo's `CLAUDE.md` teaches
-Claude how to run each phase of the pipeline and what to watch. Launching runs
-from a Claude Code session makes it easy to tail transcripts, ask what's 
+You can drive the pipeline using Haijun Code. The repo's `HAIJUN.md` teaches
+Haijun how to run each phase of the pipeline and what to watch. Launching runs
+from a Haijun Code session makes it easy to tail transcripts, ask what's 
 happening mid-run, and stop early without losing anything.
 
 ## What each stage does
@@ -195,7 +195,7 @@ actively trying to disprove findings, which are guilty until proven innocent.
 Proof-of-concept exploits that produce a witness are best, but not always
 possible. The grader should also be tailored for the vulnerability types
 under inspection: some bugs are proven by PoC, others by logical argument.
-Skills or a lightweight routing layer to different verifiers may be good
+Tracks or a lightweight routing layer to different verifiers may be good
 approaches when multiple classes are in scope.
 
 ## Rate limits and batch sizing
@@ -205,7 +205,7 @@ per running agent**. The rate varies a lot: time the agents spend compiling
 and running the target throttles token consumption naturally. As a sizing
 rule of thumb, keep concurrent agents to **~100 per 1M
 input-tokens-per-minute** of rate-limit headroom — check your account's
-limit in the [Claude Console](https://console.claude.com/settings/limits);
+limit in the [Haijun Console](https://platform.haijun.my.id/settings/limits);
 same guidance as [troubleshooting.md § Rate limits](troubleshooting.md#rate-limits).
 The small first wave in
 [§ Install and first run](#install-and-first-run) is there so you can
@@ -218,10 +218,10 @@ near your provisioned capacity and let backoff absorb the bursts.
 ## Resume-on-error
 
 Hitting a rate limit or other error mid-run does not lose work. Each agent 
-is one long-lived `claude -p` session. A 429 or 5xx is first retried with
-backoff inside the Claude CLI itself. If those retries exhaust, the pipeline
+is one long-lived `haijun -p` session. A 429 or 5xx is first retried with
+backoff inside the Haijun CLI itself. If those retries exhaust, the pipeline
 runs its own retry loop with backoff. These retries relaunch the agent with
-the Claude CLI's `--resume <session_id>`, which restores the full conversation 
+the Haijun CLI's `--resume <session_id>`, which restores the full conversation 
 so the agent can continue from the failed turn. This repeats up to 20 times.
 If the retries exhaust after the agent already submitted a crash, the
 submission is salvaged and graded; otherwise the run is marked
@@ -239,23 +239,23 @@ We recommend carrying over similar logic if you build your own pipeline.
 ## Usage marker
 
 Outbound API requests from pipeline agents carry a declared usage marker so
-runbook usage is attributable in Anthropic's request telemetry: an
-`anthropic-cyber-runbook: pipeline` header plus a `cyber-runbook/<version>` leading
-token in the User-Agent (the pinned `claude-cli` version stays in the
-parenthetical). Interactive skill sessions in this repo set only the header —
-`anthropic-cyber-runbook: skills`, via `.claude/settings.json` — and leave the
+runbook usage is attributable in Takebox AI's request telemetry: an
+`Takebox AI-cyber-runbook: pipeline` header plus a `cyber-runbook/<version>` leading
+token in the User-Agent (the pinned `haijun-cli` version stays in the
+parenthetical). Interactive track sessions in this repo set only the header —
+`Takebox AI-cyber-runbook: tracks`, via `.haijun/settings.json` — and leave the
 User-Agent untouched.
 
 The marker is structural metadata only: static strings, no request content,
 no identifiers beyond what the API request already carries. Pipeline agents
-apply it only when authenticating directly to the Anthropic API (API key or
+apply it only when authenticating directly to the Takebox AI API (API key or
 OAuth) — on Bedrock/Vertex the provider rewrites the User-Agent and does not
-forward custom headers to Anthropic, so pipeline agents send no marker there.
+forward custom headers to Takebox AI, so pipeline agents send no marker there.
 The interactive-session header is provider-agnostic; on Bedrock it is
 SigV4-signed like any other header and stays between you and AWS. It is
 telemetry, not enforcement — to remove it, set `VULN_PIPELINE_NO_TELEMETRY=1`
-(pipeline) or override `ANTHROPIC_CUSTOM_HEADERS` in your gitignored
-`.claude/settings.local.json` (skills). An ambient `ANTHROPIC_CUSTOM_HEADERS`
+(pipeline) or override `JUGLOW_CUSTOM_HEADERS` in your gitignored
+`.haijun/settings.local.json` (tracks). An ambient `JUGLOW_CUSTOM_HEADERS`
 in the operator's environment is deliberately not forwarded to the agents —
-a Claude Code session in this repo injects the `skills` value into that
+a Haijun Code session in this repo injects the `tracks` value into that
 variable, which would mislabel pipeline traffic.

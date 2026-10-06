@@ -1,8 +1,8 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """dnr-pipeline: autonomous detection & response on ``kind: dnr`` targets.
 
-The autonomous mirror of the interactive /dnr-hunt → /dnr-respond skills.
+The autonomous mirror of the interactive /dnr-hunt → /dnr-respond tracks.
 One run = a hunt agent in a sandboxed container (app source + read-only
 logs, no answer key) producing INCIDENTS.json, then a grade agent in a
 fresh container (answer key + deterministic scorer mounted read-only) that
@@ -275,8 +275,7 @@ async def _run_all(
         # must not abort the runs after it
         try:
             return await _run_once(
-                target, args, agent_env, image_tag, system_prompt, out_dirs[i], i
-            )
+                target, args, agent_env, image_tag, system_prompt, out_dirs[i], i )
         except Exception as e:
             result = {
                 "target": target.name,
@@ -420,8 +419,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
     print(f"building agent image for {target.name} ...", flush=True)
     try:
         image_tag = agent_image.ensure(
-            str(Path(target.target_dir) / "app"), target.name
-        )
+            str(Path(target.target_dir) / "app"), target.name )
     except ValueError as e:
         # agent_image.ensure rejects unsafe image tags before any docker work
         print(f"error: {e}", file=sys.stderr)

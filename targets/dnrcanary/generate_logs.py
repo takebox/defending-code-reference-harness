@@ -542,8 +542,7 @@ class Measurer:
 
 
 def make_ip_pool(
-    rng: random.Random, n: int, taken: set[str] | None = None
-) -> list[str]:
+    rng: random.Random, n: int, taken: set[str] | None = None ) -> list[str]:
     skip_first_octet = {0, 10, 100, 127, 169, 172, 192, 198, 203}
     taken = taken or set()
     pool = []
@@ -576,8 +575,7 @@ def step_in_window(ts: datetime, rng: random.Random, lo: float, hi: float) -> da
 
 
 def synth_benign(
-    entries: list, rng: random.Random, measurer: Measurer, pageviews: int
-) -> None:
+    entries: list, rng: random.Random, measurer: Measurer, pageviews: int ) -> None:
     ip_pool = make_ip_pool(rng, 3000)
     # internet-noise sources, kept off real-visitor IPs — enforced, not
     # just sampled-and-hoped (a re-roll only fires on collision, so the
@@ -833,8 +831,7 @@ def main() -> None:
 
     app_log = LOGS_DIR / "app.log"
     errors = (
-        app_log.read_text(encoding="utf-8").count(" ERROR ") if app_log.exists() else 0
-    )
+        app_log.read_text(encoding="utf-8").count(" ERROR ") if app_log.exists() else 0 )
     if errors != EXPECTED_APP_ERRORS:
         raise AssertionError(
             f"app.log has {errors} ERROR lines, expected {EXPECTED_APP_ERRORS} "

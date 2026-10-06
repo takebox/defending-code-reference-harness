@@ -1,8 +1,8 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
-"""Claude Code headless CLI wrapper.
+"""Haijun Code headless CLI wrapper.
 
-Invokes `claude -p --output-format stream-json` via `docker exec` into the
+Invokes `haijun -p --output-format stream-json` via `docker exec` into the
 agent's gVisor container and streams the JSONL. The Agent SDK is itself a
 subprocess wrapper around the same CLI; going direct keeps the argv shape
 under our control (resume, tools, system-prompt).
@@ -257,9 +257,9 @@ async def run_agent(
     tools: list[str] | None = None,
     system_prompt: str | None = None,
 ) -> AgentResult:
-    """Run a Claude Code agent session via headless CLI inside ``container``.
+    """Run a Haijun Code agent session via headless CLI inside ``container``.
 
-    Invokes ``docker exec <container> claude -p --output-format stream-json``
+    Invokes ``docker exec <container> haijun -p --output-format stream-json``
     and streams the JSONL output. Permission mode comes from
     :func:`sandbox.permission_mode` — ``bypassPermissions`` under gVisor (the
     sandbox is the boundary), ``auto`` otherwise so the classifier is the
@@ -280,12 +280,12 @@ async def run_agent(
     line is printed so long runs don't look hung.
     """
     # API key / HTTPS_PROXY are on the container's env (set at docker_ops.run
-    # time); only the per-exec overrides go via -e. CLAUDECODE="" stops the
+    # time); only the per-exec overrides go via -e. HAIJUNCODE="" stops the
     # nested-session check; IS_SANDBOX=1 lets the CLI accept bypassPermissions.
     cli_argv = ["docker", "exec", "-i",
-                "-e", "CLAUDECODE=", "-e", "IS_SANDBOX=1",
+                "-e", "HAIJUNCODE=", "-e", "IS_SANDBOX=1",
                 "-w", "/work", "--",
-                container, "claude"]
+                container, "haijun"]
     result = AgentResult()
     attempt = 0
     assistant_count = 0

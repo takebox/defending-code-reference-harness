@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """dnr-pipeline: config loading, prompt contracts, CLI guards. No docker."""
 
@@ -371,7 +371,7 @@ def test_safe_incidents_path():
         _safe_incidents_path("/work/out/INCIDENTS.json") == "/work/out/INCIDENTS.json"
     )
     assert _safe_incidents_path("/work/../root/.config/x") is None
-    assert _safe_incidents_path("/root/.config/anthropic/profile.json") is None
+    assert _safe_incidents_path("/root/.config/Takebox AI/profile.json") is None
     assert _safe_incidents_path("/grade/INCIDENTS.json") is None
     assert _safe_incidents_path("/work") is None
     assert _safe_incidents_path("work/INCIDENTS.json") is None

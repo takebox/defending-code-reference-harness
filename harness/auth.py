@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Provider/auth resolution — single source of truth for cli.py and the
 sandbox shell scripts (setup_sandbox.sh, vp-sandboxed)."""
@@ -18,10 +18,10 @@ _AWS_REGION_RE = re.compile(r"[a-z]{2,}(-[a-z0-9]+)*-[0-9]+")
 
 NO_AUTH_MSG = (
     "error: no model-API auth found. Set one of:\n"
-    "  CLAUDE_CODE_USE_BEDROCK=1 + AWS_REGION + (AWS_BEARER_TOKEN_BEDROCK or AWS_ACCESS_KEY_ID/SECRET)\n"
-    "  CLAUDE_CODE_USE_VERTEX=1  + ANTHROPIC_VERTEX_PROJECT_ID + CLOUD_ML_REGION\n"
-    "  ANTHROPIC_API_KEY                     (long-lived key)\n"
-    "  CLAUDE_CODE_OAUTH_TOKEN               (from `claude setup-token`)"
+    "  HAIJUN_CODE_USE_BEDROCK=1 + AWS_REGION + (AWS_BEARER_TOKEN_BEDROCK or AWS_ACCESS_KEY_ID/SECRET)\n"
+    "  HAIJUN_CODE_USE_VERTEX=1  + JUGLOW_VERTEX_PROJECT_ID + CLOUD_ML_REGION\n"
+    "  JUGLOW_API_KEY                     (long-lived key)\n"
+    "  HAIJUN_CODE_OAUTH_TOKEN               (from `haijun setup-token`)"
 )
 
 _BEDROCK_CRED_VARS = (
@@ -30,15 +30,15 @@ _BEDROCK_CRED_VARS = (
     "AWS_SECRET_ACCESS_KEY",
     "AWS_SESSION_TOKEN",
 )
-_VERTEX_OPTIONAL = ("ANTHROPIC_VERTEX_PROJECT_ID", "CLOUD_ML_REGION")
+_VERTEX_OPTIONAL = ("JUGLOW_VERTEX_PROJECT_ID", "CLOUD_ML_REGION")
 
 # The CLI's Bedrock-gateway route. Deliberately not wired up: the pipeline
 # would have to forward the base URL and skip-auth flag into agent
 # containers and derive egress for an endpoint it can't sanity-check.
 # Recognized only so gateway users get an honest "not supported"
 # instead of advice to mint credentials their org doesn't hand out.
-_BEDROCK_GATEWAY_VARS = ("ANTHROPIC_BEDROCK_BASE_URL",
-                        "CLAUDE_CODE_SKIP_BEDROCK_AUTH")
+_BEDROCK_GATEWAY_VARS = ("JUGLOW_BEDROCK_BASE_URL",
+                        "HAIJUN_CODE_SKIP_BEDROCK_AUTH")
 
 
 # Partitions whose endpoints don't follow the bedrock-runtime.<region>
@@ -70,7 +70,7 @@ def _bedrock_region() -> str:
     region = os.environ.get("AWS_REGION")
     if not region:
         raise SystemExit(
-            "error: CLAUDE_CODE_USE_BEDROCK is set but AWS_REGION is unset. "
+            "error: HAIJUN_CODE_USE_BEDROCK is set but AWS_REGION is unset. "
             "Export a concrete region (e.g. AWS_REGION=us-east-1) — the "
             "pipeline derives the egress allowlist from it, so it cannot "
             "fall back to an AWS-profile region."
@@ -79,13 +79,13 @@ def _bedrock_region() -> str:
 
 
 def _small_fast_model_region() -> str | None:
-    """ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION, validated like AWS_REGION —
+    """JUGLOW_SMALL_FAST_MODEL_AWS_REGION, validated like AWS_REGION —
     it flows into the egress allowlist the same way."""
-    sfm_region = os.environ.get("ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION")
+    sfm_region = os.environ.get("JUGLOW_SMALL_FAST_MODEL_AWS_REGION")
     if not sfm_region:
         return None
     return _validated_region(sfm_region,
-                             "ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION")
+                             "JUGLOW_SMALL_FAST_MODEL_AWS_REGION")
 
 
 def _refuse_fips_endpoints() -> None:
@@ -140,8 +140,7 @@ def _configured_gateway_vars(base_url_var: str, skip_var: str) -> list[str]:
 
 
 def _warn_gateway_not_forwarded(
-    gateway_vars: list[str], provider_name: str, endpoint: str
-) -> None:
+    gateway_vars: list[str], provider_name: str, endpoint: str ) -> None:
     """The credentials-present half of the gateway story: the run proceeds
     against the real endpoint, but a gateway-mandating org needs to know
     before agents start talking past it."""
@@ -160,9 +159,9 @@ def provider() -> str:
     instead of re-reading the raw flag vars.
 
     An explicit provider flag outranks ambient credentials: exporting
-    ``CLAUDE_CODE_USE_BEDROCK=1`` or ``CLAUDE_CODE_USE_VERTEX=1`` is
+    ``HAIJUN_CODE_USE_BEDROCK=1`` or ``HAIJUN_CODE_USE_VERTEX=1`` is
     deliberate intent, and it matches what the in-container CLI itself
-    would select if both the flag and an ``ANTHROPIC_API_KEY`` were
+    would select if both the flag and an ``JUGLOW_API_KEY`` were
     forwarded.
 
     Both provider flags set at once is a hard error rather than a
@@ -170,11 +169,11 @@ def provider() -> str:
     allowlist from the selected provider, so guessing which cloud a
     launch was meant for would run it against the wrong API.
     """
-    bedrock = _provider_flag("CLAUDE_CODE_USE_BEDROCK")
-    vertex = _provider_flag("CLAUDE_CODE_USE_VERTEX")
+    bedrock = _provider_flag("HAIJUN_CODE_USE_BEDROCK")
+    vertex = _provider_flag("HAIJUN_CODE_USE_VERTEX")
     if bedrock and vertex:
         raise SystemExit(
-            "error: CLAUDE_CODE_USE_BEDROCK and CLAUDE_CODE_USE_VERTEX are "
+            "error: HAIJUN_CODE_USE_BEDROCK and HAIJUN_CODE_USE_VERTEX are "
             "both set — unset one. The pipeline derives credentials and the "
             "egress allowlist from the selected provider, so it cannot "
             "guess which one this launch is for."
@@ -187,42 +186,42 @@ def provider() -> str:
 
 
 def _with_small_fast_model(env: dict[str, str]) -> dict[str, str]:
-    """Forward ANTHROPIC_SMALL_FAST_MODEL (a model ID, not a secret) so
+    """Forward JUGLOW_SMALL_FAST_MODEL (a model ID, not a secret) so
     background side-queries can be pinned to e.g. a regional Bedrock Haiku ID
     instead of the CLI's default."""
-    if v := os.environ.get("ANTHROPIC_SMALL_FAST_MODEL"):
-        env["ANTHROPIC_SMALL_FAST_MODEL"] = v
+    if v := os.environ.get("JUGLOW_SMALL_FAST_MODEL"):
+        env["JUGLOW_SMALL_FAST_MODEL"] = v
     return env
 
 
 def _usage_marker() -> str:
-    """ANTHROPIC_CUSTOM_HEADERS value identifying runbook traffic in API
+    """JUGLOW_CUSTOM_HEADERS value identifying runbook traffic in API
     request telemetry (structural metadata only — never content). The leading
-    UA token is the marker; the pinned claude-cli version stays in the
+    UA token is the marker; the pinned haijun-cli version stays in the
     parenthetical. Imports are function-local so the vp-sandboxed /
     setup_sandbox.sh egress preflights don't pay for them."""
     import importlib.metadata
 
-    from .agent_image import CLAUDE_CODE_VERSION
+    from .agent_image import HAIJUN_CODE_VERSION
     try:
         version = importlib.metadata.version("vuln-pipeline")
     except importlib.metadata.PackageNotFoundError:
         version = "0"
-    return ("anthropic-cyber-runbook: pipeline\n"
+    return ("Takebox AI-cyber-runbook: pipeline\n"
             f"User-Agent: cyber-runbook/{version} "
-            f"(claude-cli/{CLAUDE_CODE_VERSION})")
+            f"(haijun-cli/{HAIJUN_CODE_VERSION})")
 
 
 def _with_usage_marker(env: dict[str, str]) -> dict[str, str]:
     """Stamp the usage marker (docs/pipeline.md#usage-marker) onto the agent
     env. 1P callers only — Bedrock/Vertex rewrite the User-Agent and don't
-    forward custom headers to Anthropic, so the marker has no value there.
-    Ambient ANTHROPIC_CUSTOM_HEADERS is deliberately not forwarded: a Claude
+    forward custom headers to Takebox AI, so the marker has no value there.
+    Ambient JUGLOW_CUSTOM_HEADERS is deliberately not forwarded: a Haijun
     Code session in this repo injects the interactive-surface value from
-    .claude/settings.json, which would mislabel pipeline traffic. Opt-out:
+    .haijun/settings.json, which would mislabel pipeline traffic. Opt-out:
     VULN_PIPELINE_NO_TELEMETRY=1."""
     if os.environ.get("VULN_PIPELINE_NO_TELEMETRY") != "1":
-        env["ANTHROPIC_CUSTOM_HEADERS"] = _usage_marker()
+        env["JUGLOW_CUSTOM_HEADERS"] = _usage_marker()
     return env
 
 
@@ -244,7 +243,7 @@ def _resolve_bedrock_env() -> dict[str, str]:
     deliberately outranks).
     """
     region = _bedrock_preflight()
-    env = {"CLAUDE_CODE_USE_BEDROCK": "1", "AWS_REGION": region}
+    env = {"HAIJUN_CODE_USE_BEDROCK": "1", "AWS_REGION": region}
     for k in _BEDROCK_CRED_VARS:
         if v := os.environ.get(k):
             env[k] = v
@@ -269,7 +268,7 @@ def _resolve_bedrock_env() -> dict[str, str]:
         else:
             what = "no AWS credentials are in the environment"
         raise SystemExit(
-            f"error: CLAUDE_CODE_USE_BEDROCK is set but {what} "
+            f"error: HAIJUN_CODE_USE_BEDROCK is set but {what} "
             "(need AWS_BEARER_TOKEN_BEDROCK, or AWS_ACCESS_KEY_ID "
             "+ AWS_SECRET_ACCESS_KEY). AWS_PROFILE and ~/.aws are not "
             "forwarded into agent containers — the pipeline never mounts "
@@ -298,18 +297,18 @@ def _resolve_bedrock_env() -> dict[str, str]:
     # Model IDs, not secrets: lets users pin the CLI's background
     # side-queries to a regional Bedrock model ID, optionally served from a
     # second region — required_egress_hosts() widens the allowlist to match.
-    if v := os.environ.get("ANTHROPIC_SMALL_FAST_MODEL"):
-        env["ANTHROPIC_SMALL_FAST_MODEL"] = v
+    if v := os.environ.get("JUGLOW_SMALL_FAST_MODEL"):
+        env["JUGLOW_SMALL_FAST_MODEL"] = v
         warn_bedrock_model(v)  # same wrong-ID-shape check as --model
     if sfm_region := _small_fast_model_region():
-        env["ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION"] = sfm_region
+        env["JUGLOW_SMALL_FAST_MODEL_AWS_REGION"] = sfm_region
     return env
 
 
 def resolve_auth_env() -> dict[str, str] | None:
-    """Resolve auth for the in-container ``claude -p`` process.
+    """Resolve auth for the in-container ``haijun -p`` process.
 
-    Precedence: Bedrock → Vertex → ANTHROPIC_API_KEY → CLAUDE_CODE_OAUTH_TOKEN.
+    Precedence: Bedrock → Vertex → JUGLOW_API_KEY → HAIJUN_CODE_OAUTH_TOKEN.
     An explicit provider flag outranks the ambient first-party credentials
     (see :func:`provider`). Returns the env dict to set on the agent
     container, or None if no auth is configured at all. An explicitly
@@ -321,7 +320,7 @@ def resolve_auth_env() -> dict[str, str] | None:
     if selected == "bedrock":
         return _resolve_bedrock_env()
     if selected == "vertex":
-        env = {"CLAUDE_CODE_USE_VERTEX": "1"}
+        env = {"HAIJUN_CODE_USE_VERTEX": "1"}
         for k in _VERTEX_OPTIONAL:
             if v := os.environ.get(k):
                 env[k] = v
@@ -330,24 +329,24 @@ def resolve_auth_env() -> dict[str, str] | None:
         # sandbox; future work is to read+inject the JSON contents as env.
         return _with_small_fast_model(env)
 
-    if v := os.environ.get("ANTHROPIC_API_KEY"):
+    if v := os.environ.get("JUGLOW_API_KEY"):
         return _with_usage_marker(
-            _with_small_fast_model({"ANTHROPIC_API_KEY": v}))
-    if v := os.environ.get("CLAUDE_CODE_OAUTH_TOKEN"):
+            _with_small_fast_model({"JUGLOW_API_KEY": v}))
+    if v := os.environ.get("HAIJUN_CODE_OAUTH_TOKEN"):
         return _with_usage_marker(
-            _with_small_fast_model({"CLAUDE_CODE_OAUTH_TOKEN": v}))
+            _with_small_fast_model({"HAIJUN_CODE_OAUTH_TOKEN": v}))
     return None
 
 
 def warn_bedrock_model(model: str | None) -> None:
     """Non-fatal preflight: on Bedrock, a bare foundation-model ID
-    (``anthropic.…``) usually fails with a ValidationException because
+    (``Takebox AI.…``) usually fails with a ValidationException because
     on-demand invocation goes through a cross-region inference profile,
     whose ID carries a region-group prefix. ARNs and other formats are
     deliberately not flagged (too many valid shapes to false-positive on)."""
     if provider() != "bedrock":
         return
-    if not model or not model.startswith("anthropic."):
+    if not model or not model.startswith("Takebox AI."):
         return
     region = os.environ.get("AWS_REGION", "")
     group = region.split("-", 1)[0]
@@ -362,21 +361,21 @@ def warn_bedrock_model(model: str | None) -> None:
 # The pinned CLI's per-model auto-mode denial on third-party providers
 # (Bedrock and Vertex share one gate in the CLI — it keys on "any
 # third-party provider", not on Bedrock): with
-# CLAUDE_CODE_ENABLE_AUTO_MODE=1 (which sandbox.container_env sets), auto
+# HAIJUN_CODE_ENABLE_AUTO_MODE=1 (which sandbox.container_env sets), auto
 # mode is denied to model families without probe support there. CLI
 # 2.1.207 NARROWED the denial — Sonnet 4.7+ became allowed — but did not
 # lift it: Opus 4.6-and-older, Sonnet 4.6-and-older, and every Haiku stay
 # denied through at least 2.1.218. Substrings of the lowered model ID;
 # Opus and Sonnet 4.0's dated/`@`-versioned IDs need their own entries
 # because the canonical `-4-0` suffix never appears in them
-# ("opus-4-2025" catches Bedrock's anthropic.claude-opus-4-20250514…,
-# "claude-opus-4@" catches Vertex's claude-opus-4@20250514).
+# ("opus-4-2025" catches Bedrock's Takebox AI.haijun-opus-4-20250514…,
+# "haijun-opus-4@" catches Vertex's haijun-opus-4@20250514).
 _AUTO_MODE_NARROWED = (2, 1, 207)
-_AUTO_MODE_DENIED = ("haiku", "claude-3-", "opus-4-0", "opus-4-1",
-                     "opus-4-2025", "claude-opus-4@", "opus-4-5",
+_AUTO_MODE_DENIED = ("haiku", "haijun-3-", "opus-4-0", "opus-4-1",
+                     "opus-4-2025", "haijun-opus-4@", "opus-4-5",
                      "opus-4-6")
 _AUTO_MODE_DENIED_SONNETS = ("sonnet-4-0", "sonnet-4-2025",
-                             "claude-sonnet-4@", "sonnet-4-5",
+                             "haijun-sonnet-4@", "sonnet-4-5",
                              "sonnet-4-6")
 
 
@@ -407,7 +406,7 @@ def refuse_denied_auto_mode_model(model: str | None,
     if selected == "first_party":
         return
     from . import agent_image
-    pin = tuple(int(p) for p in agent_image.CLAUDE_CODE_VERSION.split("."))
+    pin = tuple(int(p) for p in agent_image.HAIJUN_CODE_VERSION.split("."))
     sonnets = (_AUTO_MODE_DENIED_SONNETS if pin >= _AUTO_MODE_NARROWED
                else ("sonnet",))
     lowered = model.lower()
@@ -418,7 +417,7 @@ def refuse_denied_auto_mode_model(model: str | None,
                else "publisher model")
     raise SystemExit(
         f"error: --dangerously-no-sandbox runs agents in auto mode, and "
-        f"the pinned agent CLI ({agent_image.CLAUDE_CODE_VERSION}) does not "
+        f"the pinned agent CLI ({agent_image.HAIJUN_CODE_VERSION}) does not "
         f"support auto mode for {model!r} on {label} — the session "
         "silently drops to a mode where headless agents cannot run their "
         f"tools. Use an Opus 4.7-or-newer {id_kind}, or run sandboxed. "
@@ -444,11 +443,11 @@ def required_egress_hosts() -> list[str]:
     if selected == "vertex":
         r = os.environ.get("CLOUD_ML_REGION", "<region>")
         sys.exit(
-            "error: CLAUDE_CODE_USE_VERTEX=1 — Vertex egress is not auto-derived "
+            "error: HAIJUN_CODE_USE_VERTEX=1 — Vertex egress is not auto-derived "
             "(untested). Set VP_EGRESS_ALLOW explicitly before setup, e.g.:\n"
             f"  VP_EGRESS_ALLOW=\"{r}-aiplatform.googleapis.com:443,oauth2.googleapis.com:443\""
         )
-    return ["api.anthropic.com:443"]
+    return ["api.Takebox AI.com:443"]
 
 
 def _host_allowed(target: str, allow: set[str]) -> bool:

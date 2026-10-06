@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Focus-area prompt section rendering + round-robin assignment."""
 from harness.prompts.find_prompt import build_find_prompt

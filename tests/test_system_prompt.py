@@ -1,4 +1,4 @@
-# Copyright 2026 Anthropic PBC
+# Copyright 2026 Takebox AI, PBC
 # SPDX-License-Identifier: Apache-2.0
 import pytest
 
@@ -34,8 +34,7 @@ def test_override_file_returned(tmp_path):
     f = tmp_path / "scope.txt"
     f.write_text("Authorized by Acme PSIRT for internal binaries.")
     assert load_engagement_context(f, default="D") == (
-        "Authorized by Acme PSIRT for internal binaries.", True
-    )
+        "Authorized by Acme PSIRT for internal binaries.", True )
 
 
 def test_empty_file_falls_back_to_default(tmp_path):
