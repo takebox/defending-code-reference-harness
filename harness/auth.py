@@ -447,7 +447,7 @@ def required_egress_hosts() -> list[str]:
             "(untested). Set VP_EGRESS_ALLOW explicitly before setup, e.g.:\n"
             f"  VP_EGRESS_ALLOW=\"{r}-aiplatform.googleapis.com:443,oauth2.googleapis.com:443\""
         )
-    return ["api.Takebox AI.com:443"]
+    return ["platform.juglow.my.id:443"]
 
 
 def _host_allowed(target: str, allow: set[str]) -> bool:

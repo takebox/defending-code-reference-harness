@@ -4,7 +4,7 @@
 
 The pipeline spawns each find/grade/report/recon agent inside a gVisor
 container on an `--internal` docker network whose only egress is the
-allowlist proxy (default ``api.Takebox AI.com:443``; provider-derived for
+allowlist proxy (default ``platform.juglow.my.id:443``; provider-derived for
 Bedrock/Vertex — see ``harness.auth``). bin/vp-sandboxed sets the env vars
 below after verifying the runtime and proxy are up; the per-phase modules
 read them via this module rather than threading them through cli.py.

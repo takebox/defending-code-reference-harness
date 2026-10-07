@@ -39,7 +39,7 @@ _spec.loader.exec_module(egress_proxy)
 
 
 def test_exact_match():
-    assert egress_proxy._allowed("api.Takebox AI.com:443", {"api.Takebox AI.com:443"})
+    assert egress_proxy._allowed("platform.juglow.my.id:443", {"platform.juglow.my.id:443"})
 
 
 def test_wildcard_matches_subdomain():
@@ -71,12 +71,12 @@ def test_charset_reject():
 @pytest.mark.parametrize(
     "target,allow",
     [
-        ("api.Takebox AI.com:443", {"api.Takebox AI.com:443"}),
+        ("platform.juglow.my.id:443", {"platform.juglow.my.id:443"}),
         ("bedrock-runtime.us-east-1.amazonaws.com:443", {"*.amazonaws.com:443"}),
         ("evilamazonaws.com:443", {"*.amazonaws.com:443"}),
         ("amazonaws.com:443", {"*.amazonaws.com:443"}),
         ("foo.bar.googleapis.com:443", {"*.googleapis.com:443"}),
-        ("api.Takebox AI.com:443", {"*.amazonaws.com:443"}),
+        ("platform.juglow.my.id:443", {"*.amazonaws.com:443"}),
     ],
 )
 def test_parity_with_harness_auth(target, allow):

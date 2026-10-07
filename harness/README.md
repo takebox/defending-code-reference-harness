@@ -95,7 +95,7 @@ Full expected-results table and run notes in
 > **Network note.** The `docker build` step in `setup_sandbox.sh` needs
 > outbound HTTPS to fetch the target source. After that, the find/grade/patch
 > agents run with egress locked to the configured allowlist (default
-> `api.Takebox AI.com:443`; see [`docs/agent-sandbox.md`](../docs/agent-sandbox.md)
+> `platform.juglow.my.id:443`; see [`docs/agent-sandbox.md`](../docs/agent-sandbox.md)
 > for Bedrock/Vertex); they never see the network beyond it. This is the
 > setup → attack isolation split described in
 > [`docs/security.md`](../docs/security.md#separating-setup-and-attack-phases).

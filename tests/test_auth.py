@@ -622,7 +622,7 @@ def test_auto_mode_refusal_narrows_when_pin_crosses_207(monkeypatch):
 # ── required_egress_hosts ───────────────────────────────────────────────────
 
 def test_required_egress_hosts_1p():
-    assert required_egress_hosts() == ["api.Takebox AI.com:443"]
+    assert required_egress_hosts() == ["platform.juglow.my.id:443"]
 
 
 def test_required_egress_hosts_bedrock(monkeypatch):
@@ -647,14 +647,14 @@ def test_required_egress_hosts_vertex_exits(monkeypatch):
 # ── check_egress_satisfied ──────────────────────────────────────────────────
 
 def test_check_egress_satisfied_ok():
-    check_egress_satisfied("api.Takebox AI.com:443")
+    check_egress_satisfied("platform.juglow.my.id:443")
 
 
 def test_check_egress_satisfied_missing_exits(monkeypatch):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
     monkeypatch.setenv("AWS_REGION", "us-east-1")
     with pytest.raises(SystemExit, match="does not cover"):
-        check_egress_satisfied("api.Takebox AI.com:443")
+        check_egress_satisfied("platform.juglow.my.id:443")
 
 
 def test_check_egress_satisfied_wildcard_covers(monkeypatch):

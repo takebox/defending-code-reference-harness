@@ -20,7 +20,7 @@ tmpfs).
 | -------------------- | --------------------- | ------------------------------------------------------ |
 | Agent `Read`/`Write` | host filesystem       | container filesystem only                              |
 | Agent `Bash`         | host shell            | container shell only (gVisor netstack/kernel)          |
-| Network egress       | whatever the host has | the configured allowlist (default `api.Takebox AI.com:443`) |
+| Network egress       | whatever the host has | the configured allowlist (default `platform.juglow.my.id:443`) |
 | Host coupling        | full                  | `docker exec cat` PoC out, `-v found_bugs.jsonl:ro` in |
 
 gVisor provides the isolation between the agent and your machine. The agent's
@@ -65,7 +65,7 @@ isolation without needing `/dev/kvm`. On macOS or Windows, run the pipeline
 inside a Linux VM or use `--dangerously-no-sandbox` (see 
 [Opting out](#opting-out) for details on what you lose).
 
-The proxy only allows traffic to `api.Takebox AI.com:443` by default,
+The proxy only allows traffic to `platform.juglow.my.id:443` by default,
 so if your API traffic goes elsewhere (i.e., you use a non-default
 `JUGLOW_BASE_URL`) it will be blocked. To override the default, set 
 `VP_EGRESS_ALLOW=host-1:443,host-2:443` (as a comma separated list)

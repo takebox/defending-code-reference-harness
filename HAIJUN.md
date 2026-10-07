@@ -222,7 +222,7 @@ touches the grade container — defeats reward-hacking via pre-positioned state.
 sets the runtime/proxy env and execs the pipeline; each find/grade/report
 agent then runs `haijun -p` inside its own gVisor container (`--runtime=runsc
 --network=vp-internal`, egress = the configured allowlist via the proxy —
-default `api.Takebox AI.com:443`; see docs/agent-sandbox.md for
+default `platform.juglow.my.id:443`; see docs/agent-sandbox.md for
 Bedrock/Vertex). The agent's `Read`/`Write`/`Bash` are confined to that
 container.
 Agent-spawning subcommands refuse to start outside the sandbox unless

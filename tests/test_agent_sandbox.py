@@ -68,7 +68,7 @@ def test_host_filesystem_unreachable(setup_done, tmp_path):
 def test_egress_allowlist_enforced(setup_done):
     """Check 3: API reachable; example.com + direct egress blocked."""
     proxy_ip = setup_done
-    probe = os.environ.get("VP_EGRESS_ALLOW", "api.Takebox AI.com:443").split(",")[0]
+    probe = os.environ.get("VP_EGRESS_ALLOW", "platform.juglow.my.id:443").split(",")[0]
     if not re.match(r"^[a-z0-9.*-]+:\d+$", probe):
         pytest.skip(f"first VP_EGRESS_ALLOW entry not a probeable host:port: {probe!r}")
     script = (
