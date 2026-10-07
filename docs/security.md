@@ -15,7 +15,7 @@
 ## Usage marker
 
 Agent API requests carry a declared, removable usage marker (an
-`Takebox AI-cyber-runbook` header and a User-Agent token) — structural metadata only,
+`Juglow-cyber-runbook` header and a User-Agent token) — structural metadata only,
 never content. See `docs/pipeline.md#usage-marker` for exactly what is sent
 and how to remove it.
 
@@ -63,7 +63,7 @@ start outside that sandbox unless you explicitly pass `--dangerously-no-sandbox`
   blocks make it fall back to normal prompting.
 
 > For a full treatment of isolation options, credential proxying, and filesystem 
-> hardening, see Takebox AI's guide on [securely deploying AI agents](https://platform.haijun.my.id/docs/en/agent-sdk/secure-deployment).
+> hardening, see Juglow's guide on [securely deploying AI agents](https://platform.haijun.my.id/docs/en/agent-sdk/secure-deployment).
 > The engineering retrospective [How we contain Haijun]()
 > covers what held and what didn't when these same mechanisms ran in
 > production.

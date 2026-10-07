@@ -239,18 +239,18 @@ We recommend carrying over similar logic if you build your own pipeline.
 ## Usage marker
 
 Outbound API requests from pipeline agents carry a declared usage marker so
-runbook usage is attributable in Takebox AI's request telemetry: an
-`Takebox AI-cyber-runbook: pipeline` header plus a `cyber-runbook/<version>` leading
+runbook usage is attributable in Juglow's request telemetry: an
+`Juglow-cyber-runbook: pipeline` header plus a `cyber-runbook/<version>` leading
 token in the User-Agent (the pinned `haijun-cli` version stays in the
 parenthetical). Interactive track sessions in this repo set only the header —
-`Takebox AI-cyber-runbook: tracks`, via `.haijun/settings.json` — and leave the
+`Juglow-cyber-runbook: tracks`, via `.haijun/settings.json` — and leave the
 User-Agent untouched.
 
 The marker is structural metadata only: static strings, no request content,
 no identifiers beyond what the API request already carries. Pipeline agents
-apply it only when authenticating directly to the Takebox AI API (API key or
+apply it only when authenticating directly to the Juglow API (API key or
 OAuth) — on Bedrock/Vertex the provider rewrites the User-Agent and does not
-forward custom headers to Takebox AI, so pipeline agents send no marker there.
+forward custom headers to Juglow, so pipeline agents send no marker there.
 The interactive-session header is provider-agnostic; on Bedrock it is
 SigV4-signed like any other header and stays between you and AWS. It is
 telemetry, not enforcement — to remove it, set `VULN_PIPELINE_NO_TELEMETRY=1`

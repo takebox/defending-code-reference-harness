@@ -1,4 +1,4 @@
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0
 """harness.auth — provider/auth resolution and egress derivation."""
 import re
@@ -297,15 +297,15 @@ def test_precedence_bedrock_over_api_key(monkeypatch):
 
 def test_bedrock_forwards_small_fast_model(monkeypatch):
     _bedrock_env(monkeypatch, AWS_BEARER_TOKEN_BEDROCK="btok",
-                 JUGLOW_SMALL_FAST_MODEL="us.Takebox AI.haijun-haiku-4-5")
+                 JUGLOW_SMALL_FAST_MODEL="us.Juglow.haijun-haiku-4-5")
     env = resolve_auth_env()
     assert env and env["JUGLOW_SMALL_FAST_MODEL"] == \
-        "us.Takebox AI.haijun-haiku-4-5"
+        "us.Juglow.haijun-haiku-4-5"
 
 
 def test_sfm_region_forwarded_and_widens_egress(monkeypatch):
     _bedrock_env(monkeypatch, AWS_BEARER_TOKEN_BEDROCK="btok",
-                 JUGLOW_SMALL_FAST_MODEL="eu.Takebox AI.haijun-haiku-4-5",
+                 JUGLOW_SMALL_FAST_MODEL="eu.Juglow.haijun-haiku-4-5",
                  JUGLOW_SMALL_FAST_MODEL_AWS_REGION="eu-central-1")
     env = resolve_auth_env()
     assert env and env["JUGLOW_SMALL_FAST_MODEL_AWS_REGION"] == \
@@ -447,7 +447,7 @@ def test_marker_on_api_key(monkeypatch):
     # Exactly two header lines; the UA leads with the marker token and pins
     # the CLI version to the agent-image pin.
     assert len(lines) == 2
-    assert lines[0] == "Takebox AI-cyber-runbook: pipeline"
+    assert lines[0] == "Juglow-cyber-runbook: pipeline"
     assert re.fullmatch(
         r"User-Agent: cyber-runbook/\S+ "
         rf"\(haijun-cli/{re.escape(HAIJUN_CODE_VERSION)}\)", lines[1])
@@ -471,9 +471,9 @@ def test_marker_replaces_ambient_headers(monkeypatch):
     # The `tracks` value .haijun/settings.json injects into operator env must
     # not survive into pipeline agents (docs/pipeline.md#usage-marker).
     monkeypatch.setenv("JUGLOW_API_KEY", "sk-ant-x")
-    monkeypatch.setenv("JUGLOW_CUSTOM_HEADERS", "Takebox AI-cyber-runbook: tracks")
+    monkeypatch.setenv("JUGLOW_CUSTOM_HEADERS", "Juglow-cyber-runbook: tracks")
     headers = _marker(resolve_auth_env())
-    assert "Takebox AI-cyber-runbook: pipeline" in headers
+    assert "Juglow-cyber-runbook: pipeline" in headers
     assert "tracks" not in headers
 
 
@@ -481,7 +481,7 @@ def test_marker_replaces_ambient_headers(monkeypatch):
 
 def test_warn_bedrock_model_bare_id_warns(monkeypatch, capsys):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
-    warn_bedrock_model("Takebox AI.haijun-sonnet-4-5-v1")
+    warn_bedrock_model("Juglow.haijun-sonnet-4-5-v1")
     err = capsys.readouterr().err
     assert "WARNING" in err
     for prefix in ("us.", "eu.", "apac.", "global."):
@@ -490,7 +490,7 @@ def test_warn_bedrock_model_bare_id_warns(monkeypatch, capsys):
 
 def test_warn_bedrock_model_prefixed_id_silent(monkeypatch, capsys):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
-    warn_bedrock_model("apac.Takebox AI.haijun-sonnet-4-5-v1")
+    warn_bedrock_model("apac.Juglow.haijun-sonnet-4-5-v1")
     assert capsys.readouterr().err == ""
 
 
@@ -498,12 +498,12 @@ def test_warn_bedrock_model_arn_silent(monkeypatch, capsys):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
     warn_bedrock_model(
         "arn:aws:bedrock:us-east-1:123456789012:inference-profile/"
-        "us.Takebox AI.haijun-sonnet-4-5-v1")
+        "us.Juglow.haijun-sonnet-4-5-v1")
     assert capsys.readouterr().err == ""
 
 
 def test_warn_bedrock_model_off_bedrock_silent(capsys):
-    warn_bedrock_model("Takebox AI.haijun-sonnet-4-5-v1")
+    warn_bedrock_model("Juglow.haijun-sonnet-4-5-v1")
     assert capsys.readouterr().err == ""
 
 
@@ -517,21 +517,21 @@ def test_warn_bedrock_model_none_or_empty_silent(monkeypatch, capsys):
 def test_warn_bedrock_model_example_apac(monkeypatch, capsys):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
     monkeypatch.setenv("AWS_REGION", "ap-northeast-2")
-    warn_bedrock_model("Takebox AI.haijun-sonnet-4-5-v1")
-    assert "(e.g. apac.Takebox AI.haijun-sonnet-4-5-v1)" in capsys.readouterr().err
+    warn_bedrock_model("Juglow.haijun-sonnet-4-5-v1")
+    assert "(e.g. apac.Juglow.haijun-sonnet-4-5-v1)" in capsys.readouterr().err
 
 
 def test_warn_bedrock_model_example_eu(monkeypatch, capsys):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
     monkeypatch.setenv("AWS_REGION", "eu-central-1")
-    warn_bedrock_model("Takebox AI.haijun-sonnet-4-5-v1")
-    assert "(e.g. eu.Takebox AI.haijun-sonnet-4-5-v1)" in capsys.readouterr().err
+    warn_bedrock_model("Juglow.haijun-sonnet-4-5-v1")
+    assert "(e.g. eu.Juglow.haijun-sonnet-4-5-v1)" in capsys.readouterr().err
 
 
 def test_warn_bedrock_model_example_defaults_us(monkeypatch, capsys):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
-    warn_bedrock_model("Takebox AI.haijun-sonnet-4-5-v1")
-    assert "(e.g. us.Takebox AI.haijun-sonnet-4-5-v1)" in capsys.readouterr().err
+    warn_bedrock_model("Juglow.haijun-sonnet-4-5-v1")
+    assert "(e.g. us.Juglow.haijun-sonnet-4-5-v1)" in capsys.readouterr().err
 
 
 # ── refuse_denied_auto_mode_model ───────────────────────────────────────────
@@ -539,16 +539,16 @@ def test_warn_bedrock_model_example_defaults_us(monkeypatch, capsys):
 def test_auto_mode_refusal_fires_on_denied_model(monkeypatch):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
     with pytest.raises(SystemExit, match="auto mode"):
-        refuse_denied_auto_mode_model("us.Takebox AI.haijun-sonnet-4-6", True)
+        refuse_denied_auto_mode_model("us.Juglow.haijun-sonnet-4-6", True)
 
 
 @pytest.mark.parametrize("model", [
-    "us.Takebox AI.haijun-haiku-4-5",
-    "eu.Takebox AI.haijun-opus-4-6",
-    "Takebox AI.haijun-3-opus-20240229",
-    "us.Takebox AI.haijun-opus-4-20250514",  # Opus 4.0's dated ID
+    "us.Juglow.haijun-haiku-4-5",
+    "eu.Juglow.haijun-opus-4-6",
+    "Juglow.haijun-3-opus-20240229",
+    "us.Juglow.haijun-opus-4-20250514",  # Opus 4.0's dated ID
     "arn:aws:bedrock:us-east-1:123456789012:inference-profile/"
-    "us.Takebox AI.haijun-sonnet-4-6",  # ARNs embed the model name too
+    "us.Juglow.haijun-sonnet-4-6",  # ARNs embed the model name too
 ])
 def test_auto_mode_refusal_covers_denied_families(monkeypatch, model):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
@@ -558,7 +558,7 @@ def test_auto_mode_refusal_covers_denied_families(monkeypatch, model):
 
 def test_auto_mode_refusal_silent_for_supported_model(monkeypatch):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
-    refuse_denied_auto_mode_model("us.Takebox AI.haijun-opus-4-8", True)
+    refuse_denied_auto_mode_model("us.Juglow.haijun-opus-4-8", True)
 
 
 def test_auto_mode_refusal_silent_for_opaque_arn(monkeypatch):
@@ -572,7 +572,7 @@ def test_auto_mode_refusal_silent_for_opaque_arn(monkeypatch):
 
 def test_auto_mode_refusal_silent_when_sandboxed(monkeypatch):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
-    refuse_denied_auto_mode_model("us.Takebox AI.haijun-sonnet-4-6", False)
+    refuse_denied_auto_mode_model("us.Juglow.haijun-sonnet-4-6", False)
 
 
 def test_auto_mode_refusal_silent_first_party():
@@ -600,7 +600,7 @@ def test_auto_mode_broad_sonnet_denial_below_207(monkeypatch):
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
     monkeypatch.setattr(agent_image, "HAIJUN_CODE_VERSION", "2.1.144")
     with pytest.raises(SystemExit):
-        refuse_denied_auto_mode_model("us.Takebox AI.haijun-sonnet-4-7", True)
+        refuse_denied_auto_mode_model("us.Juglow.haijun-sonnet-4-7", True)
 
 
 def test_auto_mode_refusal_narrows_when_pin_crosses_207(monkeypatch):
@@ -610,11 +610,11 @@ def test_auto_mode_refusal_narrows_when_pin_crosses_207(monkeypatch):
     # disarm it.
     monkeypatch.setenv("HAIJUN_CODE_USE_BEDROCK", "1")
     monkeypatch.setattr(agent_image, "HAIJUN_CODE_VERSION", "2.1.207")
-    refuse_denied_auto_mode_model("us.Takebox AI.haijun-sonnet-4-7", True)
-    for still_denied in ("us.Takebox AI.haijun-sonnet-4-6",
-                         "Takebox AI.haijun-sonnet-4-20250514",  # Sonnet 4.0
-                         "us.Takebox AI.haijun-haiku-4-5",
-                         "us.Takebox AI.haijun-opus-4-6"):
+    refuse_denied_auto_mode_model("us.Juglow.haijun-sonnet-4-7", True)
+    for still_denied in ("us.Juglow.haijun-sonnet-4-6",
+                         "Juglow.haijun-sonnet-4-20250514",  # Sonnet 4.0
+                         "us.Juglow.haijun-haiku-4-5",
+                         "us.Juglow.haijun-opus-4-6"):
         with pytest.raises(SystemExit):
             refuse_denied_auto_mode_model(still_denied, True)
 

@@ -103,12 +103,12 @@ that will outlive the run.
 
 Model IDs use Bedrock's format with a cross-region inference-profile prefix —
 `us.`, `eu.`, `apac.`, or `global.` — e.g.
-`--model us.Takebox AI.haijun-opus-4-6-v1`. The prefix must match your
+`--model us.Juglow.haijun-opus-4-6-v1`. The prefix must match your
 deployment's region group, not default to `us.`: a Korean deployment
-(`ap-northeast-2`) needs `apac.Takebox AI.haijun-sonnet-4-5-...`, not
-`us.Takebox AI....`. A bare foundation-model ID (starting with `Takebox AI.`)
+(`ap-northeast-2`) needs `apac.Juglow.haijun-sonnet-4-5-...`, not
+`us.Juglow....`. A bare foundation-model ID (starting with `Juglow.`)
 usually fails on the first call with
-`ValidationException: Invocation of model ID Takebox AI.... with on-demand
+`ValidationException: Invocation of model ID Juglow.... with on-demand
 throughput isn't supported...` — the pipeline prints a preflight warning when
 it sees one. The egress allowlist is
 auto-derived as `bedrock-runtime.<region>.amazonaws.com:443`; re-run

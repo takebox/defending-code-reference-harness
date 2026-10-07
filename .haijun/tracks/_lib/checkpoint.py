@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Checkpoint helper for the runbook tracks (vuln-scan, triage,
 threat-model, dnr-hunt, dnr-respond).

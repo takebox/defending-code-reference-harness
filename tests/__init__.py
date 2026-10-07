@@ -1,2 +1,2 @@
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0

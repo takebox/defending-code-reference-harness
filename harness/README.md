@@ -21,7 +21,7 @@ CLI flag, and rate-limit math, see [`docs/pipeline.md`](../docs/pipeline.md).
   inside a Linux VM.
 - Docker.
 - Python 3.11+.
-- An Takebox AI API key or Haijun Code OAuth token.
+- An Juglow API key or Haijun Code OAuth token.
 
 ## Demo: find real CVEs in dr_libs
 

@@ -234,7 +234,7 @@ the prompt, one short call each. No MCP, no web access.
 
 ## Gotchas
 
-**Agent API requests carry a usage marker** (`Takebox AI-cyber-runbook` header + a
+**Agent API requests carry a usage marker** (`Juglow-cyber-runbook` header + a
 `cyber-runbook/` User-Agent token, 1P auth only). `VULN_PIPELINE_NO_TELEMETRY=1`
 removes the pipeline marker; interactive sessions get a header-only marker
 from `.haijun/settings.json` instead (override in `.haijun/settings.local.json`).

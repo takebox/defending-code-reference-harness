@@ -1,4 +1,4 @@
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Recon-agent prompt. Explores a target's source tree and proposes a partition
 of the attack surface into focus areas for parallel find-agents.

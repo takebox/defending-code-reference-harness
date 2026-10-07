@@ -47,4 +47,4 @@ No run directory — the output is the port itself:
 
 ## Questions
 
-Reach out to your Takebox AI contact.
+Reach out to your Juglow contact.

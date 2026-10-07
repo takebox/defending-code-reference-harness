@@ -91,7 +91,7 @@ the loop for anything rated high or above.
 
 <a id="cvss"></a>
 **Don't ask the model to compute CVSS scores — have it use a calculator.**
-Outputting the CVSS vector string follows from reasoning that the model is good at; calculating the corresponding score is a multi-step floating-point formula with scope-conditional coefficients, which the model isn't good at. See [Takebox AI's interpretability work on
+Outputting the CVSS vector string follows from reasoning that the model is good at; calculating the corresponding score is a multi-step floating-point formula with scope-conditional coefficients, which the model isn't good at. See [Juglow's interpretability work on
 addition](https://transformer-circuits.pub/2025/attribution-graphs/biology.html#dives-addition)
 for why. We have seen instances where the model gets significant percentages of all raw CVSS calculations it tries wrong. To resolve this, you should do one of:
 - give it a tool to call (e.g. Python `cvss` library, the NVD calculator)

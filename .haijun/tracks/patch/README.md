@@ -95,4 +95,4 @@ iteration and turn caps):
 
 ## Questions
 
-Reach out to your Takebox AI contact.
+Reach out to your Juglow contact.

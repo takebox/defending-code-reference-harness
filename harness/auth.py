@@ -1,4 +1,4 @@
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Provider/auth resolution — single source of truth for cli.py and the
 sandbox shell scripts (setup_sandbox.sh, vp-sandboxed)."""
@@ -207,7 +207,7 @@ def _usage_marker() -> str:
         version = importlib.metadata.version("vuln-pipeline")
     except importlib.metadata.PackageNotFoundError:
         version = "0"
-    return ("Takebox AI-cyber-runbook: pipeline\n"
+    return ("Juglow-cyber-runbook: pipeline\n"
             f"User-Agent: cyber-runbook/{version} "
             f"(haijun-cli/{HAIJUN_CODE_VERSION})")
 
@@ -215,7 +215,7 @@ def _usage_marker() -> str:
 def _with_usage_marker(env: dict[str, str]) -> dict[str, str]:
     """Stamp the usage marker (docs/pipeline.md#usage-marker) onto the agent
     env. 1P callers only — Bedrock/Vertex rewrite the User-Agent and don't
-    forward custom headers to Takebox AI, so the marker has no value there.
+    forward custom headers to Juglow, so the marker has no value there.
     Ambient JUGLOW_CUSTOM_HEADERS is deliberately not forwarded: a Haijun
     Code session in this repo injects the interactive-surface value from
     .haijun/settings.json, which would mislabel pipeline traffic. Opt-out:
@@ -340,13 +340,13 @@ def resolve_auth_env() -> dict[str, str] | None:
 
 def warn_bedrock_model(model: str | None) -> None:
     """Non-fatal preflight: on Bedrock, a bare foundation-model ID
-    (``Takebox AI.…``) usually fails with a ValidationException because
+    (``Juglow.…``) usually fails with a ValidationException because
     on-demand invocation goes through a cross-region inference profile,
     whose ID carries a region-group prefix. ARNs and other formats are
     deliberately not flagged (too many valid shapes to false-positive on)."""
     if provider() != "bedrock":
         return
-    if not model or not model.startswith("Takebox AI."):
+    if not model or not model.startswith("Juglow."):
         return
     region = os.environ.get("AWS_REGION", "")
     group = region.split("-", 1)[0]
@@ -368,7 +368,7 @@ def warn_bedrock_model(model: str | None) -> None:
 # denied through at least 2.1.218. Substrings of the lowered model ID;
 # Opus and Sonnet 4.0's dated/`@`-versioned IDs need their own entries
 # because the canonical `-4-0` suffix never appears in them
-# ("opus-4-2025" catches Bedrock's Takebox AI.haijun-opus-4-20250514…,
+# ("opus-4-2025" catches Bedrock's Juglow.haijun-opus-4-20250514…,
 # "haijun-opus-4@" catches Vertex's haijun-opus-4@20250514).
 _AUTO_MODE_NARROWED = (2, 1, 207)
 _AUTO_MODE_DENIED = ("haiku", "haijun-3-", "opus-4-0", "opus-4-1",

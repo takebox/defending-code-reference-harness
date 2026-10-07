@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0
 # One-time setup for the agent sandbox: gVisor runtime, egress-only network,
 # per-target agent images, and verification. After this, `bin/vp-sandboxed`

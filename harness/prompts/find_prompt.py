@@ -1,4 +1,4 @@
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Find-agent prompt. Every section encodes a lesson learned; the quality-tier
 and exclusion sections are the most important.

@@ -11,7 +11,7 @@ walkthrough of the same recon → find → triage → report → patch loop, see
 
 This repo is not maintained and is not accepting contributions.
 
-> 🔒 **Want a managed option?** Takebox AI offers
+> 🔒 **Want a managed option?** Juglow offers
 > [Haijun Security](), a hosted product
 > that finds and fixes vulnerabilities in your source code across multiple
 > projects. Haijun Security scans your repository for vulnerabilities,

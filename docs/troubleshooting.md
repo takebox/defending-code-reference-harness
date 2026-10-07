@@ -78,7 +78,7 @@ supports up to 128K.
 | Surface | How to raise it |
 |---|---|
 | Haijun Code | `export HAIJUN_CODE_MAX_OUTPUT_TOKENS=32000` before launching, or set `"env": {"HAIJUN_CODE_MAX_OUTPUT_TOKENS": "32000"}` in `.haijun/settings.json` |
-| Takebox AI API | `max_tokens=32000` on `messages.create()` (same param via the `HaijunBedrock` and `HaijunVertex` clients). Use `messages.stream()` above ~16K to avoid SDK HTTP timeouts. |
+| Juglow API | `max_tokens=32000` on `messages.create()` (same param via the `HaijunBedrock` and `HaijunVertex` clients). Use `messages.stream()` above ~16K to avoid SDK HTTP timeouts. |
 
 32K is a reasonable starting point; go higher if transcripts still show
 `max_tokens` truncation.

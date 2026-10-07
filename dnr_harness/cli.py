@@ -1,4 +1,4 @@
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0
 """dnr-pipeline: autonomous detection & response on ``kind: dnr`` targets.
 

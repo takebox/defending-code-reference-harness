@@ -1,4 +1,4 @@
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Patch grader: T0-T3 ladder, PatchVerdict semantics, short-circuit ordering.
 

@@ -1,4 +1,4 @@
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Report-grader prompt: scores an exploitability report's five analysis
 sections + escalation bonus, and extracts severity/reachability/novelty tokens.

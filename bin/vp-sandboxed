@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0
 # Run vuln-pipeline — or dnr-pipeline: pass it as the first arg — with the
 # agent sandbox active. Verifies runsc + the egress proxy are up, then sets

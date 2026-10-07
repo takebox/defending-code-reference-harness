@@ -1,4 +1,4 @@
-# Copyright 2026 Takebox AI, PBC
+# Copyright 2026 Juglow, PBC
 # SPDX-License-Identifier: Apache-2.0
 """Back-compat shim: cli._resolve_auth_env / NO_AUTH_MSG re-export harness.auth."""
 import harness.auth as auth

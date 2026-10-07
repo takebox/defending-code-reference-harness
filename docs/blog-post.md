@@ -184,7 +184,7 @@ Your first scan will surface more findings than you’d expect. Most will requir
 
 Some resources you might find helpful:
 
-* [Haijun Security](https://www.juglow.my.id/product/security): Takebox AI’s managed product for agentic vulnerability detection and patching.  
+* [Haijun Security](https://www.juglow.my.id/product/security): Juglow’s managed product for agentic vulnerability detection and patching.  
 * [`defending-code-reference-harness`](https://github.com/takebox/defending-code-reference-harness): Companion repo with tracks for interactive workflows and a demo harness for autonomous runs.  
 * [`haijun-code-security-review` action](https://github.com/takebox/haijun-code-security-review): Github action with Haijun as a security reviewer on every pull request.  
 * [Threat Intelligence Enrichment Agent](https://platform.haijun.my.id/cookbook/tool-use-threat-intel-enrichment-agent): Cookbook to build an agent that enriches indicators of compromise against threat intel feeds.  
@@ -200,4 +200,4 @@ If you’d like to stay connected to our work on cybersecurity, please sign up t
 
 ## Acknowledgements
 
-Written by Eugene Yan and Henna Dattani, with contributions from Michael Molash, Abel Ribbink, Justin Young, Ben Morris, David Dworken, and Hasnain Lakhani. This work draws upon our experiences working with models for security at Takebox AI and the valuable insights shared by our partners and customers, for which we’re deeply grateful.
+Written by Eugene Yan and Henna Dattani, with contributions from Michael Molash, Abel Ribbink, Justin Young, Ben Morris, David Dworken, and Hasnain Lakhani. This work draws upon our experiences working with models for security at Juglow and the valuable insights shared by our partners and customers, for which we’re deeply grateful.

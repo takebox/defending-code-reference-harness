@@ -94,4 +94,4 @@ start over. `./.triage-state/` is scratch; add it to `.gitignore`.
 
 ## Questions
 
-Reach out to your Takebox AI contact.
+Reach out to your Juglow contact.
